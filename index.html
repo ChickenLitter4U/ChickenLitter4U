@@ -208,6 +208,10 @@
 
             const location = `${address}, ${city}, ${state}, ${zip}`;
 
+            // Get current date and time
+            const now = new Date();
+            const formattedDate = `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
+
             // Create listing element
             const listing = document.createElement('div');
             listing.className = 'listing';
@@ -216,6 +220,7 @@
                 <p><strong>Location:</strong> ${location}</p>
                 <p><strong>Quantity:</strong> ${quantity} tons</p>
                 <p>${description}</p>
+                <p><strong>Posted on:</strong> ${formattedDate}</p>
                 <button class="edit-btn">Edit</button>
                 <button class="delete-btn">Delete</button>
             `;
