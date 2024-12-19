@@ -17,6 +17,26 @@
             text-align: center;
             padding: 1rem;
         }
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin: 1rem 0;
+        }
+        .tabs button {
+            padding: 1rem;
+            margin: 0 0.5rem;
+            border: none;
+            background-color: #A52A2A;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .tabs button.active {
+            background-color: #8B0000;
+        }
+        .tabs button:hover {
+            background-color: #991111;
+        }
         .container {
             max-width: 800px;
             margin: 2rem auto;
@@ -58,6 +78,15 @@
         .listing button {
             margin-right: 0.5rem;
         }
+        footer {
+            text-align: center;
+            padding: 1rem;
+            background-color: #8B0000;
+            color: white;
+        }
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -65,10 +94,17 @@
         <h1>ChickenLitter4U</h1>
         <p>Connect with buyers and sellers for chicken litter!</p>
     </header>
-    <div class="container">
+
+    <div class="tabs">
+        <button id="postTab" class="active">Post Listing</button>
+        <button id="listingsTab">View Listings</button>
+    </div>
+
+    <div id="postSection" class="container">
         <h2>Post Your Listing</h2>
         <form id="listingForm">
             <input type="text" id="sellerName" placeholder="Your Name" required>
+            <input type="text" id="phone" placeholder="Phone Number" required>
             <input type="text" id="address" placeholder="Address" required>
             <input type="text" id="city" placeholder="City" required>
             <input type="text" id="state" placeholder="State" required>
@@ -78,66 +114,47 @@
             <button type="submit">Post Listing</button>
         </form>
     </div>
-    <div class="container">
+
+    <div id="listingsSection" class="container hidden">
         <h2>Available Listings</h2>
         <div id="listings">
             <!-- Listings will appear here -->
         </div>
     </div>
+
+    <footer>
+        <p>© 2024 ChickenLitter4U. All rights reserved. Created on December 19, 2024.</p>
+    </footer>
+
     <script>
+        const postTab = document.getElementById('postTab');
+        const listingsTab = document.getElementById('listingsTab');
+        const postSection = document.getElementById('postSection');
+        const listingsSection = document.getElementById('listingsSection');
+
+        postTab.addEventListener('click', () => {
+            postTab.classList.add('active');
+            listingsTab.classList.remove('active');
+            postSection.classList.remove('hidden');
+            listingsSection.classList.add('hidden');
+        });
+
+        listingsTab.addEventListener('click', () => {
+            listingsTab.classList.add('active');
+            postTab.classList.remove('active');
+            listingsSection.classList.remove('hidden');
+            postSection.classList.add('hidden');
+        });
+
         const form = document.getElementById('listingForm');
         const listingsContainer = document.getElementById('listings');
-
-        async function fetchLocationDetails(address) {
-            const apiKey = 'YOUR_GOOGLE_MAPS_API_KEY'; // Replace with your actual API key
-            const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`;
-
-            try {
-                const response = await fetch(url);
-                const data = await response.json();
-
-                if (data.status === "OK") {
-                    const result = data.results[0];
-                    const addressComponents = result.address_components;
-
-                    let city = "";
-                    let state = "";
-                    let zip = "";
-
-                    addressComponents.forEach(component => {
-                        if (component.types.includes("locality")) {
-                            city = component.long_name;
-                        } else if (component.types.includes("administrative_area_level_1")) {
-                            state = component.short_name;
-                        } else if (component.types.includes("postal_code")) {
-                            zip = component.long_name;
-                        }
-                    });
-
-                    document.getElementById('city').value = city;
-                    document.getElementById('state').value = state;
-                    document.getElementById('zip').value = zip;
-                } else {
-                    alert("Unable to fetch location details. Please check the address.");
-                }
-            } catch (error) {
-                console.error("Error fetching location details:", error);
-                alert("An error occurred while fetching location details.");
-            }
-        }
-
-        document.getElementById('address').addEventListener('blur', (e) => {
-            const address = e.target.value;
-            if (address) {
-                fetchLocationDetails(address);
-            }
-        });
 
         form.addEventListener('submit', (e) => {
             e.preventDefault();
 
             // Get form values
             const sellerName = document.getElementById('sellerName').value;
+            const phone = document.getElementById('phone').value;
             const address = document.getElementById('address').value;
             const city = document.getElementById('city').value;
             const state = document.getElementById('state').value;
@@ -151,7 +168,8 @@
             const listing = document.createElement('div');
             listing.className = 'listing';
             listing.innerHTML = `
-                <h3>${sellerName} - ${location}</h3>
+                <h3>${sellerName} - ${phone}</h3>
+                <p><strong>Location:</strong> ${location}</p>
                 <p><strong>Quantity:</strong> ${quantity} tons</p>
                 <p>${description}</p>
                 <button class="edit-btn">Edit</button>
@@ -166,6 +184,7 @@
             // Add edit functionality
             listing.querySelector('.edit-btn').addEventListener('click', () => {
                 document.getElementById('sellerName').value = sellerName;
+                document.getElementById('phone').value = phone;
                 document.getElementById('address').value = address;
                 document.getElementById('city').value = city;
                 document.getElementById('state').value = state;
@@ -173,6 +192,7 @@
                 document.getElementById('quantity').value = quantity;
                 document.getElementById('description').value = description;
                 listingsContainer.removeChild(listing);
+                postTab.click();
             });
 
             // Append to listings container
@@ -180,6 +200,7 @@
 
             // Clear form
             form.reset();
+            listingsTab.click();
         });
     </script>
 </body>
