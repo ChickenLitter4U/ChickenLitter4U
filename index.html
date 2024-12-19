@@ -39,6 +39,9 @@
             border: 1px solid #ccc;
             border-radius: 5px;
         }
+        textarea {
+            font-family: Arial, sans-serif;
+        }
         button {
             background-color: #8B0000;
             color: white;
@@ -66,7 +69,10 @@
         <h2>Post Your Listing</h2>
         <form id="listingForm">
             <input type="text" id="sellerName" placeholder="Your Name" required>
-            <input type="text" id="location" placeholder="Location" required>
+            <input type="text" id="address" placeholder="Address" required>
+            <input type="text" id="city" placeholder="City" required>
+            <input type="text" id="state" placeholder="State" required>
+            <input type="text" id="zip" placeholder="Zip Code" required>
             <input type="number" id="quantity" placeholder="Quantity (in tons)" required>
             <textarea id="description" placeholder="Description" rows="4" required></textarea>
             <button type="submit">Post Listing</button>
@@ -82,14 +88,64 @@
         const form = document.getElementById('listingForm');
         const listingsContainer = document.getElementById('listings');
 
+        async function fetchLocationDetails(address) {
+            const apiKey = 'YOUR_GOOGLE_MAPS_API_KEY'; // Replace with your actual API key
+            const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.status === "OK") {
+                    const result = data.results[0];
+                    const addressComponents = result.address_components;
+
+                    let city = "";
+                    let state = "";
+                    let zip = "";
+
+                    addressComponents.forEach(component => {
+                        if (component.types.includes("locality")) {
+                            city = component.long_name;
+                        } else if (component.types.includes("administrative_area_level_1")) {
+                            state = component.short_name;
+                        } else if (component.types.includes("postal_code")) {
+                            zip = component.long_name;
+                        }
+                    });
+
+                    document.getElementById('city').value = city;
+                    document.getElementById('state').value = state;
+                    document.getElementById('zip').value = zip;
+                } else {
+                    alert("Unable to fetch location details. Please check the address.");
+                }
+            } catch (error) {
+                console.error("Error fetching location details:", error);
+                alert("An error occurred while fetching location details.");
+            }
+        }
+
+        document.getElementById('address').addEventListener('blur', (e) => {
+            const address = e.target.value;
+            if (address) {
+                fetchLocationDetails(address);
+            }
+        });
+
         form.addEventListener('submit', (e) => {
             e.preventDefault();
 
             // Get form values
             const sellerName = document.getElementById('sellerName').value;
-            const location = document.getElementById('location').value;
+            const address = document.getElementById('address').value;
+            const city = document.getElementById('city').value;
+            const state = document.getElementById('state').value;
+            const zip = document.getElementById('zip').value;
             const quantity = document.getElementById('quantity').value;
             const description = document.getElementById('description').value;
+
+            const location = `${address}, ${city}, ${state}, ${zip}`;
 
             // Create listing element
             const listing = document.createElement('div');
@@ -110,7 +166,10 @@
             // Add edit functionality
             listing.querySelector('.edit-btn').addEventListener('click', () => {
                 document.getElementById('sellerName').value = sellerName;
-                document.getElementById('location').value = location;
+                document.getElementById('address').value = address;
+                document.getElementById('city').value = city;
+                document.getElementById('state').value = state;
+                document.getElementById('zip').value = zip;
                 document.getElementById('quantity').value = quantity;
                 document.getElementById('description').value = description;
                 listingsContainer.removeChild(listing);
