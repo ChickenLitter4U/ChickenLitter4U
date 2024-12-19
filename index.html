@@ -10,6 +10,7 @@
             margin: 0;
             padding: 0;
             background-color: #f8f9fa;
+            transition: background-color 0.3s ease;
         }
         header {
             background-color: #8B0000;
@@ -21,6 +22,7 @@
             display: flex;
             justify-content: center;
             margin: 1rem 0;
+            transition: all 0.3s ease;
         }
         .tabs button {
             padding: 1rem;
@@ -30,12 +32,15 @@
             color: white;
             cursor: pointer;
             border-radius: 5px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
         }
         .tabs button.active {
             background-color: #8B0000;
+            transform: scale(1.1);
         }
         .tabs button:hover {
             background-color: #991111;
+            transform: scale(1.05);
         }
         .container {
             max-width: 800px;
@@ -43,10 +48,18 @@
             background: white;
             padding: 1rem;
             border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        .container.active {
+            opacity: 1;
+            transform: translateY(0);
         }
         h1, h2 {
             text-align: center;
+            transition: color 0.3s ease;
         }
         form {
             display: flex;
@@ -58,6 +71,11 @@
             font-size: 1rem;
             border: 1px solid #ccc;
             border-radius: 5px;
+            transition: border-color 0.3s ease;
+        }
+        input:focus, textarea:focus {
+            border-color: #8B0000;
+            outline: none;
         }
         textarea {
             font-family: Arial, sans-serif;
@@ -67,22 +85,30 @@
             color: white;
             border: none;
             cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
         }
         button:hover {
             background-color: #A52A2A;
+            transform: scale(1.05);
         }
         .listing {
             border-bottom: 1px solid #ddd;
             padding: 1rem 0;
+            transition: transform 0.3s ease;
+        }
+        .listing:hover {
+            transform: scale(1.02);
         }
         .listing button {
             margin-right: 0.5rem;
+            transition: background-color 0.3s ease;
         }
         footer {
             text-align: center;
             padding: 1rem;
             background-color: #8B0000;
             color: white;
+            transition: background-color 0.3s ease;
         }
         .hidden {
             display: none;
@@ -100,7 +126,7 @@
         <button id="listingsTab">View Listings</button>
     </div>
 
-    <div id="postSection" class="container">
+    <div id="postSection" class="container active">
         <h2>Post Your Listing</h2>
         <form id="listingForm">
             <input type="text" id="sellerName" placeholder="Your Name" required>
@@ -132,18 +158,19 @@
         const postSection = document.getElementById('postSection');
         const listingsSection = document.getElementById('listingsSection');
 
+        const activateSection = (sectionToShow, sectionToHide, tabToActivate, tabToDeactivate) => {
+            sectionToShow.classList.add('active');
+            sectionToHide.classList.remove('active');
+            tabToActivate.classList.add('active');
+            tabToDeactivate.classList.remove('active');
+        };
+
         postTab.addEventListener('click', () => {
-            postTab.classList.add('active');
-            listingsTab.classList.remove('active');
-            postSection.classList.remove('hidden');
-            listingsSection.classList.add('hidden');
+            activateSection(postSection, listingsSection, postTab, listingsTab);
         });
 
         listingsTab.addEventListener('click', () => {
-            listingsTab.classList.add('active');
-            postTab.classList.remove('active');
-            listingsSection.classList.remove('hidden');
-            postSection.classList.add('hidden');
+            activateSection(listingsSection, postSection, listingsTab, postTab);
         });
 
         const form = document.getElementById('listingForm');
@@ -178,7 +205,9 @@
 
             // Add delete functionality
             listing.querySelector('.delete-btn').addEventListener('click', () => {
-                listingsContainer.removeChild(listing);
+                listing.style.opacity = '0';
+                listing.style.transform = 'translateX(-20px)';
+                setTimeout(() => listingsContainer.removeChild(listing), 300);
             });
 
             // Add edit functionality
@@ -191,12 +220,20 @@
                 document.getElementById('zip').value = zip;
                 document.getElementById('quantity').value = quantity;
                 document.getElementById('description').value = description;
-                listingsContainer.removeChild(listing);
+                listing.style.opacity = '0';
+                listing.style.transform = 'translateX(-20px)';
+                setTimeout(() => listingsContainer.removeChild(listing), 300);
                 postTab.click();
             });
 
             // Append to listings container
             listingsContainer.appendChild(listing);
+            listing.style.opacity = '0';
+            listing.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                listing.style.opacity = '1';
+                listing.style.transform = 'translateY(0)';
+            }, 10);
 
             // Clear form
             form.reset();
