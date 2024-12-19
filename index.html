@@ -38,8 +38,8 @@
         }
         .tabs button.active {
             border-bottom: 4px solid #8B0000;
-            background-color: #8B0000;
-            color: white;
+            background-color: white; /* Set the background to white */
+            color: #8B0000; /* Text color stays dark red */
             transform: scale(1.1);
         }
         .tabs button:hover {
@@ -67,7 +67,7 @@
             color: white;
         }
         #postSection h2 {
-            color: #8B0000; /* Dark red color */
+            color: #8B0000;
         }
         form {
             display: grid;
@@ -87,9 +87,6 @@
             border-color: #CD5C5C;
             outline: none;
         }
-        textarea {
-            font-family: inherit;
-        }
         button {
             background-color: #8B0000;
             color: white;
@@ -102,14 +99,22 @@
             background-color: #CD5C5C;
             transform: scale(1.05);
         }
+        #listings {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            justify-content: center;
+        }
         .listing {
-            border-bottom: 1px solid #8B0000;
-            padding: 1.5rem 0;
-            transition: background-color 0.3s ease, transform 0.3s ease;
+            width: 300px;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            transition: transform 0.3s ease;
         }
         .listing:hover {
-            background-color: #F8F8F8;
-            transform: scale(1.02);
+            transform: scale(1.05);
         }
         .listing button {
             margin-right: 0.8rem;
