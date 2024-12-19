@@ -52,6 +52,9 @@
             border-bottom: 1px solid #ddd;
             padding: 1rem 0;
         }
+        .listing button {
+            margin-right: 0.5rem;
+        }
     </style>
 </head>
 <body>
@@ -95,7 +98,23 @@
                 <h3>${sellerName} - ${location}</h3>
                 <p><strong>Quantity:</strong> ${quantity} tons</p>
                 <p>${description}</p>
+                <button class="edit-btn">Edit</button>
+                <button class="delete-btn">Delete</button>
             `;
+
+            // Add delete functionality
+            listing.querySelector('.delete-btn').addEventListener('click', () => {
+                listingsContainer.removeChild(listing);
+            });
+
+            // Add edit functionality
+            listing.querySelector('.edit-btn').addEventListener('click', () => {
+                document.getElementById('sellerName').value = sellerName;
+                document.getElementById('location').value = location;
+                document.getElementById('quantity').value = quantity;
+                document.getElementById('description').value = description;
+                listingsContainer.removeChild(listing);
+            });
 
             // Append to listings container
             listingsContainer.appendChild(listing);
@@ -106,4 +125,3 @@
     </script>
 </body>
 </html>
-
