@@ -180,6 +180,23 @@
             font-size: 0.9rem;
             margin-top: 2rem;
         }
+
+        .refresh-button {
+            background-color: #8B0000;
+            color: white;
+            padding: 0.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+            display: block;
+            margin: 20px auto;
+        }
+
+        .refresh-button:hover {
+            background-color: #CD5C5C;
+        }
     </style>
 </head>
 <body>
@@ -222,6 +239,7 @@
         <div id="listings">
             <!-- Listings will appear here -->
         </div>
+        <button class="refresh-button" onclick="refreshListings()">Refresh Listings</button>
     </div>
 
     <footer>
@@ -293,6 +311,7 @@
             form.reset();
             imagePreview.style.display = 'none'; // Hide the preview after posting
             fileName.textContent = 'No file chosen'; // Reset file name text
+            renderListings(); // Re-render listings
         });
 
         const postTab = document.getElementById('postTab');
@@ -343,6 +362,11 @@
                 listingsContainer.appendChild(listingDiv);
             });
         };
+
+        // Refresh Listings
+        function refreshListings() {
+            renderListings(); // Re-render listings from localStorage
+        }
 
         // Edit Listing
         function editListing(index) {
