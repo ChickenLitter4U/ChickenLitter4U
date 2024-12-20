@@ -145,6 +145,7 @@
         <button id="listingsTab">View Listings</button>
     </div>
 
+    <!-- Post Section -->
     <div id="postSection" class="container active">
         <h2>Create a New Listing</h2>
         <form id="listingForm">
@@ -169,6 +170,7 @@
         </form>
     </div>
 
+    <!-- Listings Section -->
     <div id="listingsSection" class="container hidden">
         <h2>Available Listings</h2>
         <div id="listings">
@@ -245,6 +247,50 @@
             imagePreview.style.display = 'none'; // Hide the preview after posting
             fileName.textContent = 'No file chosen'; // Reset file name text
         });
+
+        const postTab = document.getElementById('postTab');
+        const listingsTab = document.getElementById('listingsTab');
+        const postSection = document.getElementById('postSection');
+        const listingsSection = document.getElementById('listingsSection');
+
+        // Tab Switching Function
+        const activateSection = (sectionToShow) => {
+            const sections = [postSection, listingsSection];
+            sections.forEach(section => {
+                section.classList.add('hidden');
+            });
+            sectionToShow.classList.remove('hidden');
+        };
+
+        postTab.addEventListener('click', () => {
+            activateSection(postSection);
+            postTab.classList.add('active');
+            listingsTab.classList.remove('active');
+        });
+
+        listingsTab.addEventListener('click', () => {
+            activateSection(listingsSection);
+            postTab.classList.remove('active');
+            listingsTab.classList.add('active');
+            renderListings();
+        });
+
+        // Render Listings
+        const renderListings = () => {
+            const listingsContainer = document.getElementById('listings');
+            listingsContainer.innerHTML = '';
+            const listings = JSON.parse(localStorage.getItem('listings')) || [];
+            listings.forEach(listing => {
+                const listingDiv = document.createElement('div');
+                listingDiv.classList.add('message');
+                listingDiv.innerHTML = `
+                    <h3>${listing.sellerName}</h3>
+                    <p>${listing.description}</p>
+                    <button class="favorite-btn">Favorite</button>
+                `;
+                listingsContainer.appendChild(listingDiv);
+            });
+        };
     </script>
 </body>
 </html>
