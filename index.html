@@ -79,7 +79,7 @@
             font-size: 1rem;
             border: 1px solid #8B0000;
             border-radius: 5px;
-            background-color: #f0f0f0; /* Light gray background for visibility */
+            background-color: #f0f0f0; /* Light gray background */
             color: black; /* Dark text color */
             transition: border-color 0.3s ease;
         }
@@ -278,34 +278,49 @@
             sectionToShow.classList.remove('hidden');
         };
 
+        // Tab functionality
         document.getElementById('signupTab').addEventListener('click', () => {
             activateSection(document.getElementById('signUpSection'));
+            setActiveTab('signupTab');
         });
 
         document.getElementById('loginTab').addEventListener('click', () => {
             activateSection(document.getElementById('signInSection'));
+            setActiveTab('loginTab');
         });
 
         document.getElementById('dashboardTab').addEventListener('click', () => {
             if (currentUser) {
                 activateSection(document.getElementById('dashboardSection'));
                 loadDashboard();
+                setActiveTab('dashboardTab');
             } else {
                 alert('Please log in first.');
                 activateSection(document.getElementById('signInSection'));
+                setActiveTab('loginTab');
             }
         });
 
         document.getElementById('postTab').addEventListener('click', () => {
             activateSection(document.getElementById('postSection'));
+            setActiveTab('postTab');
         });
 
         document.getElementById('listingsTab').addEventListener('click', () => {
             activateSection(document.getElementById('listingsSection'));
             renderListings();
+            setActiveTab('listingsTab');
         });
 
-        // Sign Up
+        // Utility function to set active tab
+        const setActiveTab = (activeTab) => {
+            document.querySelectorAll('.tabs button').forEach(button => {
+                button.classList.remove('active');
+            });
+            document.getElementById(activeTab).classList.add('active');
+        };
+
+        // Sign Up functionality
         document.getElementById('signUpForm').addEventListener('submit', (e) => {
             e.preventDefault();
             const username = document.getElementById('signUpUsername').value;
@@ -316,7 +331,7 @@
             activateSection(document.getElementById('signInSection'));
         });
 
-        // Sign In
+        // Sign In functionality
         document.getElementById('signInForm').addEventListener('submit', (e) => {
             e.preventDefault();
             const username = document.getElementById('signInUsername').value;
