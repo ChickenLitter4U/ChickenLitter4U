@@ -79,8 +79,8 @@
             font-size: 1rem;
             border: 1px solid #8B0000;
             border-radius: 5px;
-            background-color: #f0f0f0; /* Light gray background */
-            color: black; /* Dark text color */
+            background-color: white;
+            color: #333;
             transition: border-color 0.3s ease;
         }
         input:focus, textarea:focus {
@@ -145,7 +145,6 @@
         <button id="listingsTab">View Listings</button>
     </div>
 
-    <!-- Post Section -->
     <div id="postSection" class="container active">
         <h2>Create a New Listing</h2>
         <form id="listingForm">
@@ -170,7 +169,6 @@
         </form>
     </div>
 
-    <!-- Listings Section -->
     <div id="listingsSection" class="container hidden">
         <h2>Available Listings</h2>
         <div id="listings">
@@ -183,64 +181,31 @@
     </footer>
 
     <script>
-        let listings = JSON.parse(localStorage.getItem('listings')) || [];
+        const imageUpload = document.getElementById('imageUpload');
+        const fileName = document.getElementById('fileName');
+        const imagePreview = document.getElementById('imagePreview');
 
-        const activateSection = (sectionToShow) => {
-            document.querySelectorAll('.container').forEach(section => {
-                section.classList.add('hidden');
-            });
-            sectionToShow.classList.remove('hidden');
-        };
-
-        // Tab functionality
-        document.getElementById('postTab').addEventListener('click', () => {
-            activateSection(document.getElementById('postSection'));
-            setActiveTab('postTab');
+        // Show the image preview when a file is selected
+        imageUpload.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                fileName.textContent = file.name;  // Update the file name text
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'block';  // Show the image preview
+                };
+                reader.readAsDataURL(file);
+            } else {
+                fileName.textContent = "No file chosen";  // Reset text if no file is chosen
+                imagePreview.style.display = 'none';  // Hide preview if no file is selected
+            }
         });
 
-        document.getElementById('listingsTab').addEventListener('click', () => {
-            activateSection(document.getElementById('listingsSection'));
-            renderListings();
-            setActiveTab('listingsTab');
-        });
-
-        // Utility function to set active tab
-        const setActiveTab = (activeTab) => {
-            document.querySelectorAll('.tabs button').forEach(button => {
-                button.classList.remove('active');
-            });
-            document.getElementById(activeTab).classList.add('active');
-        };
-
-        // Render Listings
-        const renderListings = () => {
-            const listingsContainer = document.getElementById('listings');
-            listingsContainer.innerHTML = '';
-            listings.forEach(listing => {
-                const listingDiv = document.createElement('div');
-                listingDiv.classList.add('message');
-                listingDiv.innerHTML = `
-                    <h3>${listing.sellerName}</h3>
-                    <p>${listing.description}</p>
-                    <button class="favorite-btn" onclick="toggleFavorite('${listing.sellerName}')">Favorite</button>
-                `;
-                listingsContainer.appendChild(listingDiv);
-            });
-        };
-
-        // Toggle Favorite Listings
-        const toggleFavorite = (sellerName) => {
-            const listing = listings.find(l => l.sellerName === sellerName);
-            if (!listing) return;
-
-            listing.isFavorite = !listing.isFavorite;
-            localStorage.setItem('listings', JSON.stringify(listings));
-            renderListings();
-        };
-
-        // Post a listing
-        document.getElementById('listingForm').addEventListener('submit', (e) => {
+        const form = document.getElementById('listingForm');
+        form.addEventListener('submit', (e) => {
             e.preventDefault();
+
             const sellerName = document.getElementById('sellerName').value;
             const phone = document.getElementById('phone').value;
             const address = document.getElementById('address').value;
@@ -249,8 +214,13 @@
             const zip = document.getElementById('zip').value;
             const quantity = document.getElementById('quantity').value;
             const description = document.getElementById('description').value;
+            const location = `${address}, ${city}, ${state}, ${zip}`;
+            const date = new Date().toLocaleString();
 
-            const newListing = {
+            // Get the image URL from the preview
+            const imageUrl = imagePreview.src;
+
+            const listingData = {
                 sellerName,
                 phone,
                 address,
@@ -259,19 +229,22 @@
                 zip,
                 quantity,
                 description,
-                isFavorite: false
+                location,
+                date,
+                imageUrl
             };
 
-            listings.push(newListing);
+            // Save the listing (simulated by localStorage here)
+            const listings = JSON.parse(localStorage.getItem('listings')) || [];
+            listings.push(listingData);
             localStorage.setItem('listings', JSON.stringify(listings));
 
-            // Reset form and update the listings page
-            document.getElementById('listingForm').reset();
-            activateSection(document.getElementById('listingsSection'));
-            renderListings();
-        });
+            alert('Listing Posted!');
 
-        renderListings();
+            form.reset();
+            imagePreview.style.display = 'none'; // Hide the preview after posting
+            fileName.textContent = 'No file chosen'; // Reset file name text
+        });
     </script>
 </body>
 </html>
