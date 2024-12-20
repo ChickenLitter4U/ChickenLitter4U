@@ -47,7 +47,6 @@
             border-color: #8B0000;
             color: white;
         }
-
         .container {
             max-width: 900px;
             margin: 2rem auto;
@@ -100,62 +99,38 @@
             background-color: #CD5C5C;
             transform: scale(1.05);
         }
-        #listings {
+
+        /* New styles for file upload */
+        .file-upload-container {
             display: flex;
-            flex-wrap: wrap;
-            gap: 1.5rem;
-            justify-content: center;
-        }
-        .listing {
-            width: 300px;
-            padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            background-color: #fff;
-            transition: transform 0.3s ease;
-        }
-        .listing:hover {
-            transform: scale(1.05);
-        }
-        .listing button {
-            margin-right: 0.8rem;
-            padding: 0.5rem 1rem;
-            background-color: #8B0000;
-            border: none;
-            color: white;
-            transition: background-color 0.3s ease;
-        }
-        .listing button:hover {
-            background-color: #CD5C5C;
-        }
-        footer {
-            text-align: center;
-            padding: 1rem;
-            background-color: #8B0000;
-            color: white;
-            font-size: 0.9rem;
-            margin-top: 2rem;
-        }
-        .hidden {
-            display: none;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-top: 1rem;
         }
 
-        /* Responsive Design */
-        @media (max-width: 600px) {
-            body {
-                font-size: 14px;
-            }
-            .container {
-                width: 90%;
-                margin: 1rem auto;
-            }
-            .tabs button {
-                padding: 0.8rem 1.5rem;
-            }
-            .listing {
-                width: 100%;
-                padding: 1rem;
-            }
+        .file-upload-container label {
+            font-weight: bold;
+            color: #8B0000;
+        }
+
+        .file-upload-container input[type="file"] {
+            padding: 0.5rem;
+            margin-top: 0.5rem;
+            border-radius: 5px;
+            border: 1px solid #8B0000;
+        }
+
+        .file-upload-container input[type="file"]:hover {
+            background-color: #f1f1f1;
+        }
+
+        #imagePreview {
+            display: block;
+            margin-top: 1rem;
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+            border: 1px solid #8B0000;
         }
     </style>
 </head>
@@ -182,9 +157,13 @@
             <input type="number" id="quantity" placeholder="Quantity (in tons)" required>
             <textarea id="description" placeholder="Description" rows="4"></textarea>
 
-            <!-- Image upload field -->
-            <input type="file" id="imageUpload" accept="image/*">
-            <img id="imagePreview" src="" alt="Image Preview" style="display:none; width: 100px; height: auto;"/>
+            <!-- Image upload section -->
+            <div class="file-upload-container">
+                <label for="imageUpload">Upload a photo of the chicken litter:</label>
+                <input type="file" id="imageUpload" accept="image/*">
+                <span id="fileName">No file chosen</span>
+                <img id="imagePreview" src="" alt="Image Preview" style="display:none;">
+            </div>
 
             <button type="submit">Post Listing</button>
         </form>
@@ -192,14 +171,8 @@
 
     <div id="listingsSection" class="container hidden">
         <h2>Available Listings</h2>
-        <input type="text" id="searchInput" placeholder="Search listings..." oninput="filterListings()">
-        
         <div id="listings">
             <!-- Listings will appear here -->
-        </div>
-        <div id="pagination">
-            <button id="prevPage" onclick="prevPage()">Previous</button>
-            <button id="nextPage" onclick="nextPage()">Next</button>
         </div>
     </div>
 
@@ -208,140 +181,28 @@
     </footer>
 
     <script>
-        let currentPage = 1;
-        const listingsPerPage = 5;
+        const imageUpload = document.getElementById('imageUpload');
+        const fileName = document.getElementById('fileName');
+        const imagePreview = document.getElementById('imagePreview');
 
-        // Load listings from localStorage or initialize an empty array
-        const loadListings = () => {
-            return JSON.parse(localStorage.getItem('listings')) || [];
-        };
-
-        // Save listings to localStorage
-        const saveListings = (listings) => {
-            localStorage.setItem('listings', JSON.stringify(listings));
-        };
-
-        const listings = loadListings(); // Initialize listings from localStorage
-
-        const postTab = document.getElementById('postTab');
-        const listingsTab = document.getElementById('listingsTab');
-        const postSection = document.getElementById('postSection');
-        const listingsSection = document.getElementById('listingsSection');
-        const listingsContainer = document.getElementById('listings');
-        const searchInput = document.getElementById('searchInput');
-
-        const activateSection = (sectionToShow, sectionToHide, tabToActivate, tabToDeactivate) => {
-            sectionToHide.classList.remove('active');
-            setTimeout(() => {
-                sectionToHide.classList.add('hidden');
-                sectionToShow.classList.remove('hidden');
-                setTimeout(() => sectionToShow.classList.add('active'), 10);
-            }, 300);
-            tabToActivate.classList.add('active');
-            tabToDeactivate.classList.remove('active');
-        };
-
-        postTab.addEventListener('click', () => {
-            activateSection(postSection, listingsSection, postTab, listingsTab);
-        });
-
-        listingsTab.addEventListener('click', () => {
-            activateSection(listingsSection, postSection, listingsTab, postTab);
-            displayListings();
-        });
-
-        const createListingElement = (listingData, index) => {
-            const listing = document.createElement('div');
-            listing.className = 'listing';
-            listing.innerHTML = `
-                <h3>${listingData.sellerName} - ${listingData.phone}</h3>
-                <p><strong>Location:</strong> ${listingData.location}</p>
-                <p><strong>Quantity:</strong> ${listingData.quantity} tons</p>
-                <p>${listingData.description}</p>
-                <p><strong>Posted on:</strong> ${listingData.date}</p>
-                ${listingData.imageUrl ? `<img src="${listingData.imageUrl}" alt="Listing Image" style="width:100px; height:auto;" />` : ''}
-                <button class="edit-btn">Edit</button>
-                <button class="delete-btn">Delete</button>
-            `;
-
-            listing.querySelector('.delete-btn').addEventListener('click', () => {
-                listings.splice(index, 1); // Remove from array
-                saveListings(listings); // Save updated list to localStorage
-                listingsContainer.removeChild(listing); // Remove from DOM
-                displayListings(); // Re-render listings
-            });
-
-            listing.querySelector('.edit-btn').addEventListener('click', () => {
-                document.getElementById('sellerName').value = listingData.sellerName;
-                document.getElementById('phone').value = listingData.phone;
-                document.getElementById('address').value = listingData.address;
-                document.getElementById('city').value = listingData.city;
-                document.getElementById('state').value = listingData.state;
-                document.getElementById('zip').value = listingData.zip;
-                document.getElementById('quantity').value = listingData.quantity;
-                document.getElementById('description').value = listingData.description;
-                postTab.click();
-                // When saving, we will update this existing listing instead of adding a new one
-                document.getElementById('listingForm').onsubmit = (e) => {
-                    e.preventDefault();
-                    const imageUrl = document.getElementById('imagePreview').src;
-                    const updatedListing = {
-                        ...listingData,
-                        sellerName: document.getElementById('sellerName').value,
-                        phone: document.getElementById('phone').value,
-                        address: document.getElementById('address').value,
-                        city: document.getElementById('city').value,
-                        state: document.getElementById('state').value,
-                        zip: document.getElementById('zip').value,
-                        quantity: document.getElementById('quantity').value,
-                        description: document.getElementById('description').value,
-                        imageUrl: imageUrl,
-                    };
-
-                    listings[index] = updatedListing; // Update the existing listing
-                    saveListings(listings); // Save the updated list
-                    displayListings(); // Re-render listings
-                    postTab.click();
+        // Show the image preview when a file is selected
+        imageUpload.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                fileName.textContent = file.name;  // Update the file name text
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'block';  // Show the image preview
                 };
-            });
-
-            listingsContainer.appendChild(listing);
-        };
-
-        const displayListings = () => {
-            const filteredListings = listings.filter(listing => {
-                return (
-                    listing.sellerName.toLowerCase().includes(searchInput.value.toLowerCase()) ||
-                    listing.description.toLowerCase().includes(searchInput.value.toLowerCase())
-                );
-            });
-
-            const startIndex = (currentPage - 1) * listingsPerPage;
-            const paginatedListings = filteredListings.slice(startIndex, startIndex + listingsPerPage);
-
-            listingsContainer.innerHTML = '';
-            paginatedListings.forEach((listing, index) => createListingElement(listing, index));
-
-            document.getElementById('prevPage').disabled = currentPage === 1;
-            document.getElementById('nextPage').disabled = currentPage * listingsPerPage >= filteredListings.length;
-        };
-
-        const prevPage = () => {
-            if (currentPage > 1) {
-                currentPage--;
-                displayListings();
+                reader.readAsDataURL(file);
+            } else {
+                fileName.textContent = "No file chosen";  // Reset text if no file is chosen
+                imagePreview.style.display = 'none';  // Hide preview if no file is selected
             }
-        };
-
-        const nextPage = () => {
-            currentPage++;
-            displayListings();
-        };
-
-        searchInput.addEventListener('input', displayListings);
+        });
 
         const form = document.getElementById('listingForm');
-
         form.addEventListener('submit', (e) => {
             e.preventDefault();
 
@@ -356,8 +217,8 @@
             const location = `${address}, ${city}, ${state}, ${zip}`;
             const date = new Date().toLocaleString();
 
-            // Get the image URL
-            const imageUrl = document.getElementById('imagePreview').src;
+            // Get the image URL from the preview
+            const imageUrl = imagePreview.src;
 
             const listingData = {
                 sellerName,
@@ -373,17 +234,17 @@
                 imageUrl
             };
 
+            // Save the listing (simulated by localStorage here)
+            const listings = JSON.parse(localStorage.getItem('listings')) || [];
             listings.push(listingData);
-            saveListings(listings); // Save to localStorage
+            localStorage.setItem('listings', JSON.stringify(listings));
 
-            createListingElement(listingData, listings.length - 1); // Use the new index for the listing
+            alert('Listing Posted!');
 
             form.reset();
-            listingsTab.click();
+            imagePreview.style.display = 'none'; // Hide the preview after posting
+            fileName.textContent = 'No file chosen'; // Reset file name text
         });
-
-        // Initialize listings on page load
-        displayListings();
     </script>
 </body>
 </html>
