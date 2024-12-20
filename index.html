@@ -38,8 +38,8 @@
         }
         .tabs button.active {
             border-bottom: 4px solid #8B0000;
-            background-color: white; /* Set the background to white */
-            color: #8B0000; /* Text color stays dark red */
+            background-color: white;
+            color: #8B0000;
             transform: scale(1.1);
         }
         .tabs button:hover {
@@ -138,6 +138,24 @@
         .hidden {
             display: none;
         }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            body {
+                font-size: 14px;
+            }
+            .container {
+                width: 90%;
+                margin: 1rem auto;
+            }
+            .tabs button {
+                padding: 0.8rem 1.5rem;
+            }
+            .listing {
+                width: 100%;
+                padding: 1rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -164,10 +182,12 @@
             <textarea id="description" placeholder="Description" rows="4"></textarea>
             <button type="submit">Post Listing</button>
         </form>
+        <div id="formMessage"></div>
     </div>
 
     <div id="listingsSection" class="container hidden">
         <h2>Available Listings</h2>
+        <input type="text" id="searchInput" placeholder="Search listings..." oninput="searchListings()">
         <div id="listings">
             <!-- Listings will appear here -->
         </div>
@@ -182,6 +202,9 @@
         const listingsTab = document.getElementById('listingsTab');
         const postSection = document.getElementById('postSection');
         const listingsSection = document.getElementById('listingsSection');
+        const listingsContainer = document.getElementById('listings');
+        const searchInput = document.getElementById('searchInput');
+        const formMessage = document.getElementById('formMessage');
 
         const activateSection = (sectionToShow, sectionToHide, tabToActivate, tabToDeactivate) => {
             sectionToHide.classList.remove('active');
@@ -203,10 +226,15 @@
         });
 
         const form = document.getElementById('listingForm');
-        const listingsContainer = document.getElementById('listings');
 
         form.addEventListener('submit', (e) => {
             e.preventDefault();
+
+            // Validate form fields
+            if (!form.checkValidity()) {
+                formMessage.innerHTML = "<p style='color:red;'>Please fill all the required fields correctly.</p>";
+                return;
+            }
 
             // Get form values
             const sellerName = document.getElementById('sellerName').value;
@@ -239,9 +267,11 @@
 
             // Add delete functionality
             listing.querySelector('.delete-btn').addEventListener('click', () => {
-                listing.style.opacity = '0';
-                listing.style.transform = 'translateX(-20px)';
-                setTimeout(() => listingsContainer.removeChild(listing), 300);
+                if (confirm("Are you sure you want to delete this listing?")) {
+                    listing.style.opacity = '0';
+                    listing.style.transform = 'translateX(-20px)';
+                    setTimeout(() => listingsContainer.removeChild(listing), 300);
+                }
             });
 
             // Add edit functionality
@@ -269,10 +299,24 @@
                 listing.style.transform = 'translateY(0)';
             }, 10);
 
-            // Clear form
+            // Clear form and show success message
             form.reset();
+            formMessage.innerHTML = "<p style='color:green;'>Listing posted successfully!</p>";
             listingsTab.click();
         });
+
+        function searchListings() {
+            const filter = searchInput.value.toLowerCase();
+            const listings = listingsContainer.getElementsByClassName('listing');
+            for (let i = 0; i < listings.length; i++) {
+                const title = listings[i].textContent || listings[i].innerText;
+                if (title.toLowerCase().indexOf(filter) > -1) {
+                    listings[i].style.display = "";
+                } else {
+                    listings[i].style.display = "none";
+                }
+            }
+        }
     </script>
 </body>
 </html>
