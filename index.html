@@ -181,6 +181,7 @@
             margin-top: 2rem;
         }
 
+        /* Refresh button style */
         .refresh-button {
             background-color: #8B0000;
             color: white;
@@ -190,8 +191,9 @@
             cursor: pointer;
             font-size: 1rem;
             transition: background-color 0.3s ease;
-            display: block;
-            margin: 20px auto;
+            position: absolute;
+            left: 20px;
+            bottom: 20px;
         }
 
         .refresh-button:hover {
@@ -239,6 +241,7 @@
         <div id="listings">
             <!-- Listings will appear here -->
         </div>
+        <!-- Refresh button located in the bottom left corner -->
         <button class="refresh-button" onclick="refreshListings()">Refresh Listings</button>
     </div>
 
@@ -308,9 +311,14 @@
             // Switch to View Listings after posting
             activateSection(listingsSection);
 
+            // Mark the View Listings tab as active
+            listingsTab.classList.add('active');
+            postTab.classList.remove('active');
+
             form.reset();
             imagePreview.style.display = 'none'; // Hide the preview after posting
             fileName.textContent = 'No file chosen'; // Reset file name text
+
             renderListings(); // Re-render listings
         });
 
