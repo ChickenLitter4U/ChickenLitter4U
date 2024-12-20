@@ -250,7 +250,7 @@
             displayListings();
         });
 
-        const createListingElement = (listingData) => {
+        const createListingElement = (listingData, index) => {
             const listing = document.createElement('div');
             listing.className = 'listing';
             listing.innerHTML = `
@@ -265,7 +265,6 @@
             `;
 
             listing.querySelector('.delete-btn').addEventListener('click', () => {
-                const index = listings.indexOf(listingData);
                 listings.splice(index, 1); // Remove from array
                 saveListings(listings); // Save updated list to localStorage
                 listingsContainer.removeChild(listing); // Remove from DOM
@@ -282,6 +281,28 @@
                 document.getElementById('quantity').value = listingData.quantity;
                 document.getElementById('description').value = listingData.description;
                 postTab.click();
+                // When saving, we will update this existing listing instead of adding a new one
+                document.getElementById('listingForm').onsubmit = (e) => {
+                    e.preventDefault();
+                    const imageUrl = document.getElementById('imagePreview').src;
+                    const updatedListing = {
+                        ...listingData,
+                        sellerName: document.getElementById('sellerName').value,
+                        phone: document.getElementById('phone').value,
+                        address: document.getElementById('address').value,
+                        city: document.getElementById('city').value,
+                        state: document.getElementById('state').value,
+                        zip: document.getElementById('zip').value,
+                        quantity: document.getElementById('quantity').value,
+                        description: document.getElementById('description').value,
+                        imageUrl: imageUrl,
+                    };
+
+                    listings[index] = updatedListing; // Update the existing listing
+                    saveListings(listings); // Save the updated list
+                    displayListings(); // Re-render listings
+                    postTab.click();
+                };
             });
 
             listingsContainer.appendChild(listing);
@@ -299,7 +320,7 @@
             const paginatedListings = filteredListings.slice(startIndex, startIndex + listingsPerPage);
 
             listingsContainer.innerHTML = '';
-            paginatedListings.forEach(createListingElement);
+            paginatedListings.forEach((listing, index) => createListingElement(listing, index));
 
             document.getElementById('prevPage').disabled = currentPage === 1;
             document.getElementById('nextPage').disabled = currentPage * listingsPerPage >= filteredListings.length;
@@ -355,7 +376,7 @@
             listings.push(listingData);
             saveListings(listings); // Save to localStorage
 
-            createListingElement(listingData);
+            createListingElement(listingData, listings.length - 1); // Use the new index for the listing
 
             form.reset();
             listingsTab.click();
