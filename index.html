@@ -181,7 +181,7 @@
             margin-top: 2rem;
         }
 
-        /* Refresh button style */
+        /* Refresh button style positioned at top left */
         .refresh-button {
             background-color: #8B0000;
             color: white;
@@ -193,7 +193,7 @@
             transition: background-color 0.3s ease;
             position: absolute;
             left: 20px;
-            bottom: 20px;
+            top: 20px;
         }
 
         .refresh-button:hover {
@@ -241,6 +241,7 @@
         <div id="listings">
             <!-- Listings will appear here -->
         </div>
+        <!-- Refresh button located at the top left corner -->
         <button class="refresh-button" onclick="refreshListings()">Refresh Listings</button>
     </div>
 
