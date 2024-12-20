@@ -205,6 +205,7 @@
     <script>
         let currentPage = 1;
         const listingsPerPage = 5;
+        const listings = []; // Array to hold listings in the current session
 
         const postTab = document.getElementById('postTab');
         const listingsTab = document.getElementById('listingsTab');
@@ -232,8 +233,6 @@
             activateSection(listingsSection, postSection, listingsTab, postTab);
             displayListings();
         });
-
-        const listings = [];  // Replace localStorage with a simple in-memory array
 
         const createListingElement = (listingData) => {
             const listing = document.createElement('div');
@@ -301,6 +300,8 @@
         };
 
         searchInput.addEventListener('input', displayListings);
+
+        const form = document.getElementById('listingForm');
 
         form.addEventListener('submit', (e) => {
             e.preventDefault();
