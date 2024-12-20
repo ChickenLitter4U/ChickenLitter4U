@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ChickenLitter4U</title>
     <style>
-        /* Same CSS styles as before */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
@@ -157,12 +156,32 @@
                 padding: 1rem;
             }
         }
+
+        /* Dark Mode */
+        .dark-mode {
+            background-color: #333;
+            color: white;
+        }
+
+        .dark-mode header {
+            background-color: #222;
+        }
+
+        .dark-mode .tabs button {
+            color: #fff;
+            border-color: #fff;
+        }
+
+        .dark-mode .tabs button.active {
+            border-color: #fff;
+        }
     </style>
 </head>
 <body>
     <header>
         <h1>ChickenLitter4U</h1>
         <p>Your one-stop solution for buying and selling chicken litter!</p>
+        <button id="toggleDarkMode">Toggle Dark Mode</button>
     </header>
 
     <div class="tabs">
@@ -187,8 +206,13 @@
 
     <div id="listingsSection" class="container hidden">
         <h2>Available Listings</h2>
+        <input type="text" id="searchInput" placeholder="Search listings..." oninput="searchListings()">
         <div id="listings">
             <!-- Listings will appear here -->
+        </div>
+        <div id="pagination">
+            <button id="prevPage" onclick="prevPage()">Previous</button>
+            <button id="nextPage" onclick="nextPage()">Next</button>
         </div>
     </div>
 
@@ -197,12 +221,17 @@
     </footer>
 
     <script>
+        let currentPage = 1;
+        const listingsPerPage = 5;
+
         const postTab = document.getElementById('postTab');
         const listingsTab = document.getElementById('listingsTab');
         const postSection = document.getElementById('postSection');
         const listingsSection = document.getElementById('listingsSection');
         const listingsContainer = document.getElementById('listings');
         const formMessage = document.getElementById('formMessage');
+        const searchInput = document.getElementById('searchInput');
+        const toggleDarkMode = document.getElementById('toggleDarkMode');
 
         const activateSection = (sectionToShow, sectionToHide, tabToActivate, tabToDeactivate) => {
             sectionToHide.classList.remove('active');
@@ -221,6 +250,7 @@
 
         listingsTab.addEventListener('click', () => {
             activateSection(listingsSection, postSection, listingsTab, postTab);
+            displayListings();
         });
 
         const form = document.getElementById('listingForm');
@@ -228,9 +258,11 @@
         // Load existing listings from localStorage
         const loadListings = () => {
             const storedListings = JSON.parse(localStorage.getItem('listings')) || [];
-            storedListings.forEach(listing => {
-                createListingElement(listing);
-            });
+            return storedListings;
+        };
+
+        const saveListings = (listings) => {
+            localStorage.setItem('listings', JSON.stringify(listings));
         };
 
         // Create listing element and append to the listings container
@@ -251,14 +283,15 @@
             listing.querySelector('.delete-btn').addEventListener('click', () => {
                 if (confirm("Are you sure you want to delete this listing?")) {
                     const index = [...listingsContainer.children].indexOf(listing);
-                    const storedListings = JSON.parse(localStorage.getItem('listings')) || [];
+                    const storedListings = loadListings();
                     storedListings.splice(index, 1);
-                    localStorage.setItem('listings', JSON.stringify(storedListings));
+                    saveListings(storedListings);
                     listingsContainer.removeChild(listing);
+                    displayListings();
                 }
             });
 
-            // Edit functionality (same as before)
+            // Edit functionality
             listing.querySelector('.edit-btn').addEventListener('click', () => {
                 document.getElementById('sellerName').value = listingData.sellerName;
                 document.getElementById('phone').value = listingData.phone;
@@ -274,8 +307,39 @@
             listingsContainer.appendChild(listing);
         };
 
-        // Load listings when the page loads
-        loadListings();
+        // Display listings based on pagination and search
+        const displayListings = () => {
+            const storedListings = loadListings();
+            const filteredListings = storedListings.filter(listing => 
+                listing.sellerName.toLowerCase().includes(searchInput.value.toLowerCase()) ||
+                listing.description.toLowerCase().includes(searchInput.value.toLowerCase())
+            );
+
+            const startIndex = (currentPage - 1) * listingsPerPage;
+            const paginatedListings = filteredListings.slice(startIndex, startIndex + listingsPerPage);
+
+            listingsContainer.innerHTML = '';
+            paginatedListings.forEach(createListingElement);
+
+            document.getElementById('prevPage').disabled = currentPage === 1;
+            document.getElementById('nextPage').disabled = currentPage * listingsPerPage >= filteredListings.length;
+        };
+
+        // Handle search
+        searchInput.addEventListener('input', displayListings);
+
+        // Handle pagination
+        const prevPage = () => {
+            if (currentPage > 1) {
+                currentPage--;
+                displayListings();
+            }
+        };
+
+        const nextPage = () => {
+            currentPage++;
+            displayListings();
+        };
 
         form.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -305,10 +369,10 @@
                 date
             };
 
-            // Store the new listing in localStorage
-            const storedListings = JSON.parse(localStorage.getItem('listings')) || [];
+            // Save the new listing in localStorage
+            const storedListings = loadListings();
             storedListings.push(listingData);
-            localStorage.setItem('listings', JSON.stringify(storedListings));
+            saveListings(storedListings);
 
             // Create listing element and append to the container
             createListingElement(listingData);
@@ -318,6 +382,14 @@
             formMessage.innerHTML = "<p style='color:green;'>Listing posted successfully!</p>";
             listingsTab.click();
         });
+
+        // Dark mode toggle
+        toggleDarkMode.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+        });
+
+        // Load listings initially
+        displayListings();
     </script>
 </body>
 </html>
