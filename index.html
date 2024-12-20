@@ -47,6 +47,32 @@
             border-color: #8B0000;
             color: white;
         }
+
+        /* Dark Mode */
+        .dark-mode {
+            background-color: #333;
+            color: white;
+        }
+
+        .dark-mode header {
+            background-color: #222;
+        }
+
+        .dark-mode .tabs button {
+            color: #ddd; /* Light color for text */
+            border-color: #555; /* Dark border for contrast */
+        }
+
+        .dark-mode .tabs button.active {
+            border-color: #fff; /* Active border is white */
+            background-color: #555; /* Dark background for active tab */
+            color: white; /* Text color for active button */
+        }
+
+        .dark-mode .tabs button:hover {
+            background-color: #CD5C5C; /* Highlight hover color */
+        }
+
         .container {
             max-width: 900px;
             margin: 2rem auto;
@@ -156,25 +182,6 @@
                 padding: 1rem;
             }
         }
-
-        /* Dark Mode */
-        .dark-mode {
-            background-color: #333;
-            color: white;
-        }
-
-        .dark-mode header {
-            background-color: #222;
-        }
-
-        .dark-mode .tabs button {
-            color: #fff;
-            border-color: #fff;
-        }
-
-        .dark-mode .tabs button.active {
-            border-color: #fff;
-        }
     </style>
 </head>
 <body>
@@ -206,7 +213,20 @@
 
     <div id="listingsSection" class="container hidden">
         <h2>Available Listings</h2>
-        <input type="text" id="searchInput" placeholder="Search listings..." oninput="searchListings()">
+        
+        <!-- Search Filters -->
+        <select id="locationFilter">
+            <option value="">Select Location</option>
+            <option value="Location1">Location1</option>
+            <option value="Location2">Location2</option>
+        </select>
+        <select id="quantityFilter">
+            <option value="">Select Quantity</option>
+            <option value="1">1 ton</option>
+            <option value="2">2 tons</option>
+        </select>
+        <input type="text" id="searchInput" placeholder="Search listings..." oninput="filterListings()">
+        
         <div id="listings">
             <!-- Listings will appear here -->
         </div>
@@ -224,14 +244,15 @@
         let currentPage = 1;
         const listingsPerPage = 5;
 
+        const toggleDarkMode = document.getElementById('toggleDarkMode');
         const postTab = document.getElementById('postTab');
         const listingsTab = document.getElementById('listingsTab');
         const postSection = document.getElementById('postSection');
         const listingsSection = document.getElementById('listingsSection');
         const listingsContainer = document.getElementById('listings');
-        const formMessage = document.getElementById('formMessage');
         const searchInput = document.getElementById('searchInput');
-        const toggleDarkMode = document.getElementById('toggleDarkMode');
+        const locationFilter = document.getElementById('locationFilter');
+        const quantityFilter = document.getElementById('quantityFilter');
 
         const activateSection = (sectionToShow, sectionToHide, tabToActivate, tabToDeactivate) => {
             sectionToHide.classList.remove('active');
@@ -253,19 +274,14 @@
             displayListings();
         });
 
-        const form = document.getElementById('listingForm');
-
-        // Load existing listings from localStorage
         const loadListings = () => {
-            const storedListings = JSON.parse(localStorage.getItem('listings')) || [];
-            return storedListings;
+            return JSON.parse(localStorage.getItem('listings')) || [];
         };
 
         const saveListings = (listings) => {
             localStorage.setItem('listings', JSON.stringify(listings));
         };
 
-        // Create listing element and append to the listings container
         const createListingElement = (listingData) => {
             const listing = document.createElement('div');
             listing.className = 'listing';
@@ -279,7 +295,6 @@
                 <button class="delete-btn">Delete</button>
             `;
 
-            // Delete functionality
             listing.querySelector('.delete-btn').addEventListener('click', () => {
                 if (confirm("Are you sure you want to delete this listing?")) {
                     const index = [...listingsContainer.children].indexOf(listing);
@@ -291,7 +306,6 @@
                 }
             });
 
-            // Edit functionality
             listing.querySelector('.edit-btn').addEventListener('click', () => {
                 document.getElementById('sellerName').value = listingData.sellerName;
                 document.getElementById('phone').value = listingData.phone;
@@ -307,13 +321,15 @@
             listingsContainer.appendChild(listing);
         };
 
-        // Display listings based on pagination and search
         const displayListings = () => {
             const storedListings = loadListings();
-            const filteredListings = storedListings.filter(listing => 
-                listing.sellerName.toLowerCase().includes(searchInput.value.toLowerCase()) ||
-                listing.description.toLowerCase().includes(searchInput.value.toLowerCase())
-            );
+            const filteredListings = storedListings.filter(listing => {
+                return (
+                    (listing.location.toLowerCase().includes(locationFilter.value.toLowerCase()) || locationFilter.value === '') &&
+                    (listing.quantity.toString().includes(quantityFilter.value) || quantityFilter.value === '') &&
+                    (listing.sellerName.toLowerCase().includes(searchInput.value.toLowerCase()) || listing.description.toLowerCase().includes(searchInput.value.toLowerCase()))
+                );
+            });
 
             const startIndex = (currentPage - 1) * listingsPerPage;
             const paginatedListings = filteredListings.slice(startIndex, startIndex + listingsPerPage);
@@ -325,10 +341,6 @@
             document.getElementById('nextPage').disabled = currentPage * listingsPerPage >= filteredListings.length;
         };
 
-        // Handle search
-        searchInput.addEventListener('input', displayListings);
-
-        // Handle pagination
         const prevPage = () => {
             if (currentPage > 1) {
                 currentPage--;
@@ -341,10 +353,14 @@
             displayListings();
         };
 
+        searchInput.addEventListener('input', displayListings);
+
+        locationFilter.addEventListener('change', displayListings);
+        quantityFilter.addEventListener('change', displayListings);
+
         form.addEventListener('submit', (e) => {
             e.preventDefault();
 
-            // Get form values
             const sellerName = document.getElementById('sellerName').value;
             const phone = document.getElementById('phone').value;
             const address = document.getElementById('address').value;
@@ -369,26 +385,21 @@
                 date
             };
 
-            // Save the new listing in localStorage
             const storedListings = loadListings();
             storedListings.push(listingData);
             saveListings(storedListings);
 
-            // Create listing element and append to the container
             createListingElement(listingData);
 
-            // Clear form and show success message
             form.reset();
             formMessage.innerHTML = "<p style='color:green;'>Listing posted successfully!</p>";
             listingsTab.click();
         });
 
-        // Dark mode toggle
         toggleDarkMode.addEventListener('click', () => {
             document.body.classList.toggle('dark-mode');
         });
 
-        // Load listings initially
         displayListings();
     </script>
 </body>
