@@ -235,6 +235,31 @@
         </div>
     </div>
 
+    <!-- Post Section -->
+    <div id="postSection" class="container hidden">
+        <h2>Create a New Listing</h2>
+        <form id="listingForm">
+            <input type="text" id="sellerName" placeholder="Your Name" required>
+            <input type="text" id="phone" placeholder="Phone Number" required>
+            <input type="text" id="address" placeholder="Address" required>
+            <input type="text" id="city" placeholder="City" required>
+            <input type="text" id="state" placeholder="State" required>
+            <input type="text" id="zip" placeholder="Zip Code" required>
+            <input type="number" id="quantity" placeholder="Quantity (in tons)" required>
+            <textarea id="description" placeholder="Description" rows="4"></textarea>
+
+            <!-- Image upload section -->
+            <div class="file-upload-container">
+                <label for="imageUpload">Upload a photo of the chicken litter:</label>
+                <input type="file" id="imageUpload" accept="image/*">
+                <span id="fileName">No file chosen</span>
+                <img id="imagePreview" src="" alt="Image Preview" style="display:none;">
+            </div>
+
+            <button type="submit">Post Listing</button>
+        </form>
+    </div>
+
     <footer>
         <p>© 2024 ChickenLitter4U. All rights reserved. Created on December 19, 2024.</p>
     </footer>
@@ -273,7 +298,7 @@
 
         document.getElementById('postTab').addEventListener('click', () => {
             if (currentUser) {
-                activateSection(document.getElementById('listingsSection'));
+                activateSection(document.getElementById('postSection'));
             } else {
                 alert('Please log in first.');
                 activateSection(document.getElementById('signInSection'));
