@@ -132,46 +132,6 @@
             border-radius: 5px;
             border: 1px solid #8B0000;
         }
-
-        /* Dashboard Section */
-        .dashboard-section {
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .dashboard-card {
-            background-color: #f0f0f0;
-            padding: 1rem;
-            margin: 1rem;
-            border-radius: 8px;
-            flex: 1;
-        }
-        .dashboard-card h3 {
-            text-align: center;
-        }
-
-        .message-container {
-            margin-top: 2rem;
-            max-width: 500px;
-            padding: 1rem;
-            background-color: #f9f9f9;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .message-list {
-            max-height: 200px;
-            overflow-y: auto;
-            margin-bottom: 1rem;
-        }
-
-        .message {
-            padding: 0.5rem;
-            margin-bottom: 0.5rem;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            background-color: #f1f1f1;
-        }
     </style>
 </head>
 <body>
@@ -183,60 +143,10 @@
     <div class="tabs">
         <button id="postTab" class="active">Post Listing</button>
         <button id="listingsTab">View Listings</button>
-        <button id="dashboardTab">Dashboard</button>
-        <button id="loginTab">Log In</button>
-        <button id="signupTab">Sign Up</button>
-    </div>
-
-    <!-- Sign Up Form -->
-    <div id="signUpSection" class="container hidden">
-        <h2>Sign Up</h2>
-        <form id="signUpForm">
-            <input type="text" id="signUpUsername" placeholder="Username" required>
-            <input type="password" id="signUpPassword" placeholder="Password" required>
-            <button type="submit">Sign Up</button>
-        </form>
-    </div>
-
-    <!-- Sign In Form -->
-    <div id="signInSection" class="container hidden">
-        <h2>Sign In</h2>
-        <form id="signInForm">
-            <input type="text" id="signInUsername" placeholder="Username" required>
-            <input type="password" id="signInPassword" placeholder="Password" required>
-            <button type="submit">Sign In</button>
-        </form>
-    </div>
-
-    <!-- Dashboard -->
-    <div id="dashboardSection" class="container hidden">
-        <h2>Dashboard</h2>
-        <div class="dashboard-section">
-            <div class="dashboard-card">
-                <h3>Your Active Listings</h3>
-                <ul id="activeListings"></ul>
-            </div>
-            <div class="dashboard-card">
-                <h3>Your Favorite Listings</h3>
-                <ul id="favoriteListings"></ul>
-            </div>
-        </div>
-        <div class="dashboard-card">
-            <h3>Your Location</h3>
-            <p id="userLocation">Location: Not Available</p>
-        </div>
-    </div>
-
-    <!-- Listings Section -->
-    <div id="listingsSection" class="container hidden">
-        <h2>Available Listings</h2>
-        <div id="listings">
-            <!-- Listings will appear here -->
-        </div>
     </div>
 
     <!-- Post Section -->
-    <div id="postSection" class="container hidden">
+    <div id="postSection" class="container active">
         <h2>Create a New Listing</h2>
         <form id="listingForm">
             <input type="text" id="sellerName" placeholder="Your Name" required>
@@ -260,16 +170,20 @@
         </form>
     </div>
 
+    <!-- Listings Section -->
+    <div id="listingsSection" class="container hidden">
+        <h2>Available Listings</h2>
+        <div id="listings">
+            <!-- Listings will appear here -->
+        </div>
+    </div>
+
     <footer>
         <p>© 2024 ChickenLitter4U. All rights reserved. Created on December 19, 2024.</p>
     </footer>
 
     <script>
-        let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
-        const users = JSON.parse(localStorage.getItem('users')) || [];
-        const listings = JSON.parse(localStorage.getItem('listings')) || [];
-        const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-        let activeListings = [];
+        let listings = JSON.parse(localStorage.getItem('listings')) || [];
 
         const activateSection = (sectionToShow) => {
             document.querySelectorAll('.container').forEach(section => {
@@ -279,28 +193,6 @@
         };
 
         // Tab functionality
-        document.getElementById('signupTab').addEventListener('click', () => {
-            activateSection(document.getElementById('signUpSection'));
-            setActiveTab('signupTab');
-        });
-
-        document.getElementById('loginTab').addEventListener('click', () => {
-            activateSection(document.getElementById('signInSection'));
-            setActiveTab('loginTab');
-        });
-
-        document.getElementById('dashboardTab').addEventListener('click', () => {
-            if (currentUser) {
-                activateSection(document.getElementById('dashboardSection'));
-                loadDashboard();
-                setActiveTab('dashboardTab');
-            } else {
-                alert('Please log in first.');
-                activateSection(document.getElementById('signInSection'));
-                setActiveTab('loginTab');
-            }
-        });
-
         document.getElementById('postTab').addEventListener('click', () => {
             activateSection(document.getElementById('postSection'));
             setActiveTab('postTab');
@@ -320,82 +212,7 @@
             document.getElementById(activeTab).classList.add('active');
         };
 
-        // Sign Up functionality
-        document.getElementById('signUpForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const username = document.getElementById('signUpUsername').value;
-            const password = document.getElementById('signUpPassword').value;
-            users.push({ username, password });
-            localStorage.setItem('users', JSON.stringify(users));
-            alert('Sign Up Successful! Please log in.');
-            activateSection(document.getElementById('signInSection'));
-        });
-
-        // Sign In functionality
-        document.getElementById('signInForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const username = document.getElementById('signInUsername').value;
-            const password = document.getElementById('signInPassword').value;
-            const user = users.find(u => u.username === username && u.password === password);
-            if (user) {
-                currentUser = user;
-                localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                alert('Login Successful!');
-                activateSection(document.getElementById('dashboardSection'));
-                loadDashboard();
-            } else {
-                alert('Invalid credentials!');
-            }
-        });
-
-        // Render Listings in the dashboard
-        const loadDashboard = () => {
-            document.getElementById('activeListings').innerHTML = '';
-            document.getElementById('favoriteListings').innerHTML = '';
-            activeListings = listings.filter(listing => listing.sellerName === currentUser.username);
-            activeListings.forEach(listing => {
-                const li = document.createElement('li');
-                li.textContent = `${listing.sellerName} - ${listing.description}`;
-                document.getElementById('activeListings').appendChild(li);
-            });
-
-            favorites.forEach(fav => {
-                const li = document.createElement('li');
-                li.textContent = `${fav.sellerName} - ${fav.description}`;
-                document.getElementById('favoriteListings').appendChild(li);
-            });
-
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(showPosition, showError);
-            } else {
-                document.getElementById("userLocation").textContent = "Geolocation is not supported by this browser.";
-            }
-        };
-
-        function showPosition(position) {
-            const lat = position.coords.latitude;
-            const lon = position.coords.longitude;
-            document.getElementById("userLocation").textContent = `Latitude: ${lat}, Longitude: ${lon}`;
-        }
-
-        function showError(error) {
-            switch(error.code) {
-                case error.PERMISSION_DENIED:
-                    document.getElementById("userLocation").textContent = "User denied the request for Geolocation.";
-                    break;
-                case error.POSITION_UNAVAILABLE:
-                    document.getElementById("userLocation").textContent = "Location information is unavailable.";
-                    break;
-                case error.TIMEOUT:
-                    document.getElementById("userLocation").textContent = "The request to get user location timed out.";
-                    break;
-                case error.UNKNOWN_ERROR:
-                    document.getElementById("userLocation").textContent = "An unknown error occurred.";
-                    break;
-            }
-        }
-
-        // Render Listings on View Listings Page
+        // Render Listings
         const renderListings = () => {
             const listingsContainer = document.getElementById('listings');
             listingsContainer.innerHTML = '';
@@ -414,14 +231,45 @@
         // Toggle Favorite Listings
         const toggleFavorite = (sellerName) => {
             const listing = listings.find(l => l.sellerName === sellerName);
-            if (favorites.includes(listing)) {
-                favorites.splice(favorites.indexOf(listing), 1);
-            } else {
-                favorites.push(listing);
-            }
-            localStorage.setItem('favorites', JSON.stringify(favorites));
-            loadDashboard();
+            if (!listing) return;
+
+            listing.isFavorite = !listing.isFavorite;
+            localStorage.setItem('listings', JSON.stringify(listings));
+            renderListings();
         };
+
+        // Post a listing
+        document.getElementById('listingForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const sellerName = document.getElementById('sellerName').value;
+            const phone = document.getElementById('phone').value;
+            const address = document.getElementById('address').value;
+            const city = document.getElementById('city').value;
+            const state = document.getElementById('state').value;
+            const zip = document.getElementById('zip').value;
+            const quantity = document.getElementById('quantity').value;
+            const description = document.getElementById('description').value;
+
+            const newListing = {
+                sellerName,
+                phone,
+                address,
+                city,
+                state,
+                zip,
+                quantity,
+                description,
+                isFavorite: false
+            };
+
+            listings.push(newListing);
+            localStorage.setItem('listings', JSON.stringify(listings));
+
+            // Reset form and update the listings page
+            document.getElementById('listingForm').reset();
+            activateSection(document.getElementById('listingsSection'));
+            renderListings();
+        });
 
         renderListings();
     </script>
