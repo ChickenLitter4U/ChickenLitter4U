@@ -48,31 +48,6 @@
             color: white;
         }
 
-        /* Dark Mode */
-        .dark-mode {
-            background-color: #333;
-            color: white;
-        }
-
-        .dark-mode header {
-            background-color: #222;
-        }
-
-        .dark-mode .tabs button {
-            color: #ddd; /* Light color for text */
-            border-color: #555; /* Dark border for contrast */
-        }
-
-        .dark-mode .tabs button.active {
-            border-color: #fff; /* Active border is white */
-            background-color: #555; /* Dark background for active tab */
-            color: white; /* Text color for active button */
-        }
-
-        .dark-mode .tabs button:hover {
-            background-color: #CD5C5C; /* Highlight hover color */
-        }
-
         .container {
             max-width: 900px;
             margin: 2rem auto;
@@ -188,7 +163,6 @@
     <header>
         <h1>ChickenLitter4U</h1>
         <p>Your one-stop solution for buying and selling chicken litter!</p>
-        <button id="toggleDarkMode">Toggle Dark Mode</button>
     </header>
 
     <div class="tabs">
@@ -213,18 +187,8 @@
 
     <div id="listingsSection" class="container hidden">
         <h2>Available Listings</h2>
-        
-        <!-- Search Filters -->
-        <select id="locationFilter">
-            <option value="">Select Location</option>
-            <option value="Location1">Location1</option>
-            <option value="Location2">Location2</option>
-        </select>
-        <select id="quantityFilter">
-            <option value="">Select Quantity</option>
-            <option value="1">1 ton</option>
-            <option value="2">2 tons</option>
-        </select>
+
+        <!-- Search Bar (no filters for now) -->
         <input type="text" id="searchInput" placeholder="Search listings..." oninput="filterListings()">
         
         <div id="listings">
@@ -244,15 +208,12 @@
         let currentPage = 1;
         const listingsPerPage = 5;
 
-        const toggleDarkMode = document.getElementById('toggleDarkMode');
         const postTab = document.getElementById('postTab');
         const listingsTab = document.getElementById('listingsTab');
         const postSection = document.getElementById('postSection');
         const listingsSection = document.getElementById('listingsSection');
         const listingsContainer = document.getElementById('listings');
         const searchInput = document.getElementById('searchInput');
-        const locationFilter = document.getElementById('locationFilter');
-        const quantityFilter = document.getElementById('quantityFilter');
 
         const activateSection = (sectionToShow, sectionToHide, tabToActivate, tabToDeactivate) => {
             sectionToHide.classList.remove('active');
@@ -325,9 +286,8 @@
             const storedListings = loadListings();
             const filteredListings = storedListings.filter(listing => {
                 return (
-                    (listing.location.toLowerCase().includes(locationFilter.value.toLowerCase()) || locationFilter.value === '') &&
-                    (listing.quantity.toString().includes(quantityFilter.value) || quantityFilter.value === '') &&
-                    (listing.sellerName.toLowerCase().includes(searchInput.value.toLowerCase()) || listing.description.toLowerCase().includes(searchInput.value.toLowerCase()))
+                    listing.sellerName.toLowerCase().includes(searchInput.value.toLowerCase()) ||
+                    listing.description.toLowerCase().includes(searchInput.value.toLowerCase())
                 );
             });
 
@@ -354,9 +314,6 @@
         };
 
         searchInput.addEventListener('input', displayListings);
-
-        locationFilter.addEventListener('change', displayListings);
-        quantityFilter.addEventListener('change', displayListings);
 
         form.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -394,10 +351,6 @@
             form.reset();
             formMessage.innerHTML = "<p style='color:green;'>Listing posted successfully!</p>";
             listingsTab.click();
-        });
-
-        toggleDarkMode.addEventListener('click', () => {
-            document.body.classList.toggle('dark-mode');
         });
 
         displayListings();
