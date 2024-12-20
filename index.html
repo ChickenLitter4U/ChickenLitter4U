@@ -233,14 +233,7 @@
             displayListings();
         });
 
-        // Load listings from localStorage
-        const loadListings = () => {
-            return JSON.parse(localStorage.getItem('listings')) || [];
-        };
-
-        const saveListings = (listings) => {
-            localStorage.setItem('listings', JSON.stringify(listings));
-        };
+        const listings = [];  // Replace localStorage with a simple in-memory array
 
         const createListingElement = (listingData) => {
             const listing = document.createElement('div');
@@ -255,19 +248,13 @@
                 <button class="delete-btn">Delete</button>
             `;
 
-            // Delete functionality
             listing.querySelector('.delete-btn').addEventListener('click', () => {
-                if (confirm("Are you sure you want to delete this listing?")) {
-                    const index = [...listingsContainer.children].indexOf(listing);
-                    const storedListings = loadListings();
-                    storedListings.splice(index, 1);
-                    saveListings(storedListings);
-                    listingsContainer.removeChild(listing);
-                    displayListings();
-                }
+                const index = listings.indexOf(listingData);
+                listings.splice(index, 1);
+                listingsContainer.removeChild(listing);
+                displayListings();
             });
 
-            // Edit functionality
             listing.querySelector('.edit-btn').addEventListener('click', () => {
                 document.getElementById('sellerName').value = listingData.sellerName;
                 document.getElementById('phone').value = listingData.phone;
@@ -284,8 +271,7 @@
         };
 
         const displayListings = () => {
-            const storedListings = loadListings();
-            const filteredListings = storedListings.filter(listing => {
+            const filteredListings = listings.filter(listing => {
                 return (
                     listing.sellerName.toLowerCase().includes(searchInput.value.toLowerCase()) ||
                     listing.description.toLowerCase().includes(searchInput.value.toLowerCase())
@@ -343,14 +329,10 @@
                 date
             };
 
-            const storedListings = loadListings();
-            storedListings.push(listingData);
-            saveListings(storedListings);
-
+            listings.push(listingData);
             createListingElement(listingData);
 
             form.reset();
-            formMessage.innerHTML = "<p style='color:green;'>Listing posted successfully!</p>";
             listingsTab.click();
         });
 
