@@ -206,8 +206,17 @@
         let currentPage = 1;
         const listingsPerPage = 5;
 
-        // Load the listings from localStorage or initialize with an empty array
-        let listings = JSON.parse(localStorage.getItem('listings')) || [];
+        // Load listings from localStorage or initialize an empty array
+        const loadListings = () => {
+            return JSON.parse(localStorage.getItem('listings')) || [];
+        };
+
+        // Save listings to localStorage
+        const saveListings = (listings) => {
+            localStorage.setItem('listings', JSON.stringify(listings));
+        };
+
+        const listings = loadListings(); // Initialize listings from localStorage
 
         const postTab = document.getElementById('postTab');
         const listingsTab = document.getElementById('listingsTab');
@@ -249,16 +258,14 @@
                 <button class="delete-btn">Delete</button>
             `;
 
-            // Delete functionality
             listing.querySelector('.delete-btn').addEventListener('click', () => {
                 const index = listings.indexOf(listingData);
-                listings.splice(index, 1);
-                saveListings();
-                listingsContainer.removeChild(listing);
-                displayListings();
+                listings.splice(index, 1); // Remove from array
+                saveListings(listings); // Save updated list to localStorage
+                listingsContainer.removeChild(listing); // Remove from DOM
+                displayListings(); // Re-render listings
             });
 
-            // Edit functionality
             listing.querySelector('.edit-btn').addEventListener('click', () => {
                 document.getElementById('sellerName').value = listingData.sellerName;
                 document.getElementById('phone').value = listingData.phone;
@@ -272,10 +279,6 @@
             });
 
             listingsContainer.appendChild(listing);
-        };
-
-        const saveListings = () => {
-            localStorage.setItem('listings', JSON.stringify(listings));
         };
 
         const displayListings = () => {
@@ -340,7 +343,7 @@
             };
 
             listings.push(listingData);
-            saveListings(); // Save listings to localStorage
+            saveListings(listings); // Save to localStorage
 
             createListingElement(listingData);
 
