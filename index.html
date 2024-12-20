@@ -130,6 +130,49 @@
             border: 1px solid #8B0000;
         }
 
+        /* Grid layout for the listings */
+        #listings {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .listing-card {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .listing-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .listing-card img {
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+
+        .listing-card button {
+            background-color: #8B0000;
+            color: white;
+            padding: 0.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .listing-card button:hover {
+            background-color: #CD5C5C;
+        }
+
         footer {
             text-align: center;
             padding: 1rem;
@@ -284,9 +327,9 @@
             const listingsContainer = document.getElementById('listings');
             listingsContainer.innerHTML = ''; // Clear any existing listings
             const listings = JSON.parse(localStorage.getItem('listings')) || [];
-            listings.forEach(listing => {
+            listings.forEach((listing, index) => {
                 const listingDiv = document.createElement('div');
-                listingDiv.classList.add('message');
+                listingDiv.classList.add('listing-card');
                 listingDiv.innerHTML = `
                     <h3>${listing.sellerName}</h3>
                     <p>${listing.description}</p>
@@ -294,10 +337,41 @@
                     <p><strong>Location:</strong> ${listing.location}</p>
                     <p><strong>Quantity:</strong> ${listing.quantity} tons</p>
                     <p><strong>Posted on:</strong> ${listing.date}</p>
+                    <button onclick="editListing(${index})">Edit</button>
+                    <button onclick="deleteListing(${index})">Delete</button>
                 `;
                 listingsContainer.appendChild(listingDiv);
             });
         };
+
+        // Edit Listing
+        function editListing(index) {
+            const listings = JSON.parse(localStorage.getItem('listings')) || [];
+            const listing = listings[index];
+            document.getElementById('sellerName').value = listing.sellerName;
+            document.getElementById('phone').value = listing.phone;
+            document.getElementById('address').value = listing.address;
+            document.getElementById('city').value = listing.city;
+            document.getElementById('state').value = listing.state;
+            document.getElementById('zip').value = listing.zip;
+            document.getElementById('quantity').value = listing.quantity;
+            document.getElementById('description').value = listing.description;
+            imagePreview.src = listing.imageUrl;
+            imagePreview.style.display = 'block';
+            document.getElementById('fileName').textContent = listing.imageUrl ? 'File chosen' : 'No file chosen';
+            deleteListing(index); // Remove the old listing before submitting the edit
+        }
+
+        // Delete Listing
+        function deleteListing(index) {
+            const listings = JSON.parse(localStorage.getItem('listings')) || [];
+            listings.splice(index, 1);
+            localStorage.setItem('listings', JSON.stringify(listings));
+            renderListings(); // Re-render the listings
+        }
+
+        // Initial render of listings when page loads
+        renderListings();
     </script>
 </body>
 </html>
