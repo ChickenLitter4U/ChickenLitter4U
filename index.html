@@ -54,13 +54,10 @@
             padding: 2rem;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.4s ease, transform 0.4s ease;
+            display: none;
         }
         .container.active {
-            opacity: 1;
-            transform: translateY(0);
+            display: block;
         }
         h1, h2 {
             text-align: center;
@@ -145,7 +142,6 @@
         <button id="listingsTab">View Listings</button>
     </div>
 
-    <!-- Post Section -->
     <div id="postSection" class="container active">
         <h2>Create a New Listing</h2>
         <form id="listingForm">
@@ -170,8 +166,7 @@
         </form>
     </div>
 
-    <!-- Listings Section -->
-    <div id="listingsSection" class="container hidden">
+    <div id="listingsSection" class="container">
         <h2>Available Listings</h2>
         <div id="listings">
             <!-- Listings will appear here -->
@@ -257,9 +252,9 @@
         const activateSection = (sectionToShow) => {
             const sections = [postSection, listingsSection];
             sections.forEach(section => {
-                section.classList.add('hidden');
+                section.classList.remove('active');
             });
-            sectionToShow.classList.remove('hidden');
+            sectionToShow.classList.add('active');
         };
 
         postTab.addEventListener('click', () => {
