@@ -181,6 +181,11 @@
             <input type="text" id="zip" placeholder="Zip Code" required>
             <input type="number" id="quantity" placeholder="Quantity (in tons)" required>
             <textarea id="description" placeholder="Description" rows="4"></textarea>
+
+            <!-- Image upload field -->
+            <input type="file" id="imageUpload" accept="image/*">
+            <img id="imagePreview" src="" alt="Image Preview" style="display:none; width: 100px; height: auto;"/>
+
             <button type="submit">Post Listing</button>
         </form>
     </div>
@@ -254,6 +259,7 @@
                 <p><strong>Quantity:</strong> ${listingData.quantity} tons</p>
                 <p>${listingData.description}</p>
                 <p><strong>Posted on:</strong> ${listingData.date}</p>
+                ${listingData.imageUrl ? `<img src="${listingData.imageUrl}" alt="Listing Image" style="width:100px; height:auto;" />` : ''}
                 <button class="edit-btn">Edit</button>
                 <button class="delete-btn">Delete</button>
             `;
@@ -329,6 +335,9 @@
             const location = `${address}, ${city}, ${state}, ${zip}`;
             const date = new Date().toLocaleString();
 
+            // Get the image URL
+            const imageUrl = document.getElementById('imagePreview').src;
+
             const listingData = {
                 sellerName,
                 phone,
@@ -339,7 +348,8 @@
                 quantity,
                 description,
                 location,
-                date
+                date,
+                imageUrl
             };
 
             listings.push(listingData);
@@ -351,6 +361,7 @@
             listingsTab.click();
         });
 
+        // Initialize listings on page load
         displayListings();
     </script>
 </body>
