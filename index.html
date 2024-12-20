@@ -205,7 +205,9 @@
     <script>
         let currentPage = 1;
         const listingsPerPage = 5;
-        const listings = []; // Array to hold listings in the current session
+
+        // Load the listings from localStorage or initialize with an empty array
+        let listings = JSON.parse(localStorage.getItem('listings')) || [];
 
         const postTab = document.getElementById('postTab');
         const listingsTab = document.getElementById('listingsTab');
@@ -247,13 +249,16 @@
                 <button class="delete-btn">Delete</button>
             `;
 
+            // Delete functionality
             listing.querySelector('.delete-btn').addEventListener('click', () => {
                 const index = listings.indexOf(listingData);
                 listings.splice(index, 1);
+                saveListings();
                 listingsContainer.removeChild(listing);
                 displayListings();
             });
 
+            // Edit functionality
             listing.querySelector('.edit-btn').addEventListener('click', () => {
                 document.getElementById('sellerName').value = listingData.sellerName;
                 document.getElementById('phone').value = listingData.phone;
@@ -267,6 +272,10 @@
             });
 
             listingsContainer.appendChild(listing);
+        };
+
+        const saveListings = () => {
+            localStorage.setItem('listings', JSON.stringify(listings));
         };
 
         const displayListings = () => {
@@ -331,6 +340,8 @@
             };
 
             listings.push(listingData);
+            saveListings(); // Save listings to localStorage
+
             createListingElement(listingData);
 
             form.reset();
