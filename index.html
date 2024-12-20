@@ -181,7 +181,7 @@
             margin-top: 2rem;
         }
 
-        /* Refresh button style positioned below the dark red line */
+        /* Refresh button style positioned below the dark red line but in the white area */
         .refresh-button {
             background-color: #8B0000;
             color: white;
@@ -193,7 +193,7 @@
             transition: background-color 0.3s ease;
             position: absolute;
             left: 20px;
-            top: 70px; /* Positioned below the red line */
+            top: 80px; /* Positioned just below the dark red line */
         }
 
         .refresh-button:hover {
@@ -212,7 +212,7 @@
         <button id="listingsTab" class="active">View Listings</button>
     </div>
 
-    <div id="postSection" class="container">
+    <div id="postSection" class="container active">
         <h2>Create a New Listing</h2>
         <form id="listingForm">
             <input type="text" id="sellerName" placeholder="Your Name" required>
