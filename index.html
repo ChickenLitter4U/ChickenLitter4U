@@ -208,11 +208,11 @@
     </header>
 
     <div class="tabs">
-        <button id="postTab" class="active">Post Listing</button>
-        <button id="listingsTab">View Listings</button>
+        <button id="postTab">Post Listing</button>
+        <button id="listingsTab" class="active">View Listings</button>
     </div>
 
-    <div id="postSection" class="container active">
+    <div id="postSection" class="container">
         <h2>Create a New Listing</h2>
         <form id="listingForm">
             <input type="text" id="sellerName" placeholder="Your Name" required>
@@ -241,7 +241,6 @@
         <div id="listings">
             <!-- Listings will appear here -->
         </div>
-        <!-- Refresh button located in the bottom left corner -->
         <button class="refresh-button" onclick="refreshListings()">Refresh Listings</button>
     </div>
 
