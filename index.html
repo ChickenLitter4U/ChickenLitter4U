@@ -80,7 +80,7 @@
             border: 1px solid #8B0000;
             border-radius: 5px;
             background-color: white;
-            color: #333;
+            color: black; /* Dark text color */
             transition: border-color 0.3s ease;
         }
         input:focus, textarea:focus {
@@ -297,12 +297,7 @@
         });
 
         document.getElementById('postTab').addEventListener('click', () => {
-            if (currentUser) {
-                activateSection(document.getElementById('postSection'));
-            } else {
-                alert('Please log in first.');
-                activateSection(document.getElementById('signInSection'));
-            }
+            activateSection(document.getElementById('postSection'));
         });
 
         document.getElementById('listingsTab').addEventListener('click', () => {
