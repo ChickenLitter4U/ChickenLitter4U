@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ChickenLitter4U</title>
     <style>
+        /* Same CSS styles as before */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
@@ -182,12 +183,10 @@
             <textarea id="description" placeholder="Description" rows="4"></textarea>
             <button type="submit">Post Listing</button>
         </form>
-        <div id="formMessage"></div>
     </div>
 
     <div id="listingsSection" class="container hidden">
         <h2>Available Listings</h2>
-        <input type="text" id="searchInput" placeholder="Search listings..." oninput="searchListings()">
         <div id="listings">
             <!-- Listings will appear here -->
         </div>
@@ -203,7 +202,6 @@
         const postSection = document.getElementById('postSection');
         const listingsSection = document.getElementById('listingsSection');
         const listingsContainer = document.getElementById('listings');
-        const searchInput = document.getElementById('searchInput');
         const formMessage = document.getElementById('formMessage');
 
         const activateSection = (sectionToShow, sectionToHide, tabToActivate, tabToDeactivate) => {
@@ -227,14 +225,60 @@
 
         const form = document.getElementById('listingForm');
 
+        // Load existing listings from localStorage
+        const loadListings = () => {
+            const storedListings = JSON.parse(localStorage.getItem('listings')) || [];
+            storedListings.forEach(listing => {
+                createListingElement(listing);
+            });
+        };
+
+        // Create listing element and append to the listings container
+        const createListingElement = (listingData) => {
+            const listing = document.createElement('div');
+            listing.className = 'listing';
+            listing.innerHTML = `
+                <h3>${listingData.sellerName} - ${listingData.phone}</h3>
+                <p><strong>Location:</strong> ${listingData.location}</p>
+                <p><strong>Quantity:</strong> ${listingData.quantity} tons</p>
+                <p>${listingData.description}</p>
+                <p><strong>Posted on:</strong> ${listingData.date}</p>
+                <button class="edit-btn">Edit</button>
+                <button class="delete-btn">Delete</button>
+            `;
+
+            // Delete functionality
+            listing.querySelector('.delete-btn').addEventListener('click', () => {
+                if (confirm("Are you sure you want to delete this listing?")) {
+                    const index = [...listingsContainer.children].indexOf(listing);
+                    const storedListings = JSON.parse(localStorage.getItem('listings')) || [];
+                    storedListings.splice(index, 1);
+                    localStorage.setItem('listings', JSON.stringify(storedListings));
+                    listingsContainer.removeChild(listing);
+                }
+            });
+
+            // Edit functionality (same as before)
+            listing.querySelector('.edit-btn').addEventListener('click', () => {
+                document.getElementById('sellerName').value = listingData.sellerName;
+                document.getElementById('phone').value = listingData.phone;
+                document.getElementById('address').value = listingData.address;
+                document.getElementById('city').value = listingData.city;
+                document.getElementById('state').value = listingData.state;
+                document.getElementById('zip').value = listingData.zip;
+                document.getElementById('quantity').value = listingData.quantity;
+                document.getElementById('description').value = listingData.description;
+                postTab.click();
+            });
+
+            listingsContainer.appendChild(listing);
+        };
+
+        // Load listings when the page loads
+        loadListings();
+
         form.addEventListener('submit', (e) => {
             e.preventDefault();
-
-            // Validate form fields
-            if (!form.checkValidity()) {
-                formMessage.innerHTML = "<p style='color:red;'>Please fill all the required fields correctly.</p>";
-                return;
-            }
 
             // Get form values
             const sellerName = document.getElementById('sellerName').value;
@@ -245,78 +289,35 @@
             const zip = document.getElementById('zip').value;
             const quantity = document.getElementById('quantity').value;
             const description = document.getElementById('description').value;
-
             const location = `${address}, ${city}, ${state}, ${zip}`;
+            const date = new Date().toLocaleString();
 
-            // Get current date and time
-            const now = new Date();
-            const formattedDate = `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
+            const listingData = {
+                sellerName,
+                phone,
+                address,
+                city,
+                state,
+                zip,
+                quantity,
+                description,
+                location,
+                date
+            };
 
-            // Create listing element
-            const listing = document.createElement('div');
-            listing.className = 'listing';
-            listing.innerHTML = `
-                <h3>${sellerName} - ${phone}</h3>
-                <p><strong>Location:</strong> ${location}</p>
-                <p><strong>Quantity:</strong> ${quantity} tons</p>
-                <p>${description}</p>
-                <p><strong>Posted on:</strong> ${formattedDate}</p>
-                <button class="edit-btn">Edit</button>
-                <button class="delete-btn">Delete</button>
-            `;
+            // Store the new listing in localStorage
+            const storedListings = JSON.parse(localStorage.getItem('listings')) || [];
+            storedListings.push(listingData);
+            localStorage.setItem('listings', JSON.stringify(storedListings));
 
-            // Add delete functionality
-            listing.querySelector('.delete-btn').addEventListener('click', () => {
-                if (confirm("Are you sure you want to delete this listing?")) {
-                    listing.style.opacity = '0';
-                    listing.style.transform = 'translateX(-20px)';
-                    setTimeout(() => listingsContainer.removeChild(listing), 300);
-                }
-            });
-
-            // Add edit functionality
-            listing.querySelector('.edit-btn').addEventListener('click', () => {
-                document.getElementById('sellerName').value = sellerName;
-                document.getElementById('phone').value = phone;
-                document.getElementById('address').value = address;
-                document.getElementById('city').value = city;
-                document.getElementById('state').value = state;
-                document.getElementById('zip').value = zip;
-                document.getElementById('quantity').value = quantity;
-                document.getElementById('description').value = description;
-                listing.style.opacity = '0';
-                listing.style.transform = 'translateX(-20px)';
-                setTimeout(() => listingsContainer.removeChild(listing), 300);
-                postTab.click();
-            });
-
-            // Append to listings container
-            listingsContainer.appendChild(listing);
-            listing.style.opacity = '0';
-            listing.style.transform = 'translateY(20px)';
-            setTimeout(() => {
-                listing.style.opacity = '1';
-                listing.style.transform = 'translateY(0)';
-            }, 10);
+            // Create listing element and append to the container
+            createListingElement(listingData);
 
             // Clear form and show success message
             form.reset();
             formMessage.innerHTML = "<p style='color:green;'>Listing posted successfully!</p>";
             listingsTab.click();
         });
-
-        function searchListings() {
-            const filter = searchInput.value.toLowerCase();
-            const listings = listingsContainer.getElementsByClassName('listing');
-            for (let i = 0; i < listings.length; i++) {
-                const title = listings[i].textContent || listings[i].innerText;
-                if (title.toLowerCase().indexOf(filter) > -1) {
-                    listings[i].style.display = "";
-                } else {
-                    listings[i].style.display = "none";
-                }
-            }
-        }
     </script>
 </body>
 </html>
