@@ -265,8 +265,8 @@
             const location = `${address}, ${city}, ${state}, ${zip}`;
             const date = new Date().toLocaleString();
 
-            // Get the image URL from the preview
-            const imageUrl = imagePreview.src;
+            // Get the image URL from the preview (only if an image is selected)
+            const imageUrl = imagePreview.style.display === 'block' ? imagePreview.src : '';
 
             const listingData = {
                 sellerName,
@@ -287,7 +287,8 @@
             listings.push(listingData);
             localStorage.setItem('listings', JSON.stringify(listings));
 
-            alert('Listing Posted!');
+            // Switch to View Listings after posting
+            activateSection(listingsSection);
 
             form.reset();
             imagePreview.style.display = 'none'; // Hide the preview after posting
@@ -332,7 +333,7 @@
                 listingDiv.innerHTML = `
                     <h3>${listing.sellerName}</h3>
                     <p>${listing.description}</p>
-                    <img src="${listing.imageUrl}" alt="Image" style="max-width: 100%; height: auto; border-radius: 5px;">
+                    ${listing.imageUrl ? `<img src="${listing.imageUrl}" alt="Image">` : ''}
                     <p><strong>Location:</strong> ${listing.location}</p>
                     <p><strong>Quantity:</strong> ${listing.quantity} tons</p>
                     <p><strong>Posted on:</strong> ${listing.date}</p>
