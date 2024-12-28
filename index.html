@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ChickenLitter4U</title>
   <style>
-    /* General Styling */
     body {
       margin: 0;
       padding: 0;
@@ -28,8 +27,6 @@
       margin: 0;
       font-size: 1.2rem;
     }
-
-    /* Tabs Styling */
     .tabs {
       display: flex;
       justify-content: center;
@@ -54,8 +51,6 @@
       background: #8b0000;
       color: #fff;
     }
-
-    /* Containers */
     .container {
       max-width: 900px;
       margin: 2rem auto;
@@ -68,8 +63,6 @@
     .container.active {
       display: block;
     }
-
-    /* Form Styling */
     form {
       display: grid;
       gap: 1rem;
@@ -104,8 +97,6 @@
       background: #cd5c5c;
       transform: scale(1.05);
     }
-
-    /* Listings Styling */
     #listings {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -191,43 +182,67 @@
 
     document.getElementById("listingForm").addEventListener("submit", async (e) => {
       e.preventDefault();
-      const sellerName = document.getElementById("sellerName").value;
-      const phone = document.getElementById("phone").value;
-      const address = document.getElementById("address").value;
-      const city = document.getElementById("city").value;
-      const state = document.getElementById("state").value;
-      const zip = document.getElementById("zip").value;
+
+      const sellerName = document.getElementById("sellerName").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const address = document.getElementById("address").value.trim();
+      const city = document.getElementById("city").value.trim();
+      const state = document.getElementById("state").value.trim();
+      const zip = document.getElementById("zip").value.trim();
       const quantity = document.getElementById("quantity").value;
-      const description = document.getElementById("description").value;
+      const description = document.getElementById("description").value.trim();
 
-      await fetch(BASE_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sellerName, phone, address, city, state, zip, quantity, description }),
-      });
+      try {
+        const response = await fetch(BASE_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            sellerName,
+            phone,
+            address,
+            city,
+            state,
+            zip,
+            quantity,
+            description,
+          }),
+        });
 
-      alert("Listing posted!");
-      showTab("listings");
-      loadListings();
+        if (!response.ok) {
+          throw new Error("Failed to post listing.");
+        }
+
+        alert("Listing posted successfully!");
+        showTab("listings");
+        loadListings();
+      } catch (error) {
+        console.error(error);
+        alert("Error posting listing. Please try again.");
+      }
     });
 
     async function loadListings() {
-      const response = await fetch(BASE_URL);
-      const listings = await response.json();
-      const listingsContainer = document.getElementById("listings");
-      listingsContainer.innerHTML = listings
-        .map(
-          (listing) => `
-          <div class="listing-card">
-            <h3>${listing.sellerName}</h3>
-            <p>${listing.description}</p>
-            <p><strong>Quantity:</strong> ${listing.quantity} tons</p>
-            <p><strong>Contact:</strong> ${listing.phone}</p>
-            <p><strong>Location:</strong> ${listing.address}, ${listing.city}, ${listing.state}, ${listing.zip}</p>
-          </div>
-        `
-        )
-        .join("");
+      try {
+        const response = await fetch(BASE_URL);
+        const listings = await response.json();
+        const listingsContainer = document.getElementById("listings");
+        listingsContainer.innerHTML = listings
+          .map(
+            (listing) => `
+            <div class="listing-card">
+              <h3>${listing.sellerName}</h3>
+              <p>${listing.description}</p>
+              <p><strong>Quantity:</strong> ${listing.quantity} tons</p>
+              <p><strong>Contact:</strong> ${listing.phone}</p>
+              <p><strong>Location:</strong> ${listing.address}, ${listing.city}, ${listing.state}, ${listing.zip}</p>
+            </div>
+          `
+          )
+          .join("");
+      } catch (error) {
+        console.error(error);
+        alert("Error loading listings. Please try again.");
+      }
     }
   </script>
 </body>
