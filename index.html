@@ -1,68 +1,122 @@
-const express = require("express");
-const cors = require("cors");
-const app = express();
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ChickenLitter4U</title>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #f9f9f9; margin: 0; padding: 0; }
+    header { text-align: center; padding: 20px; background-color: #8b0000; color: #fff; }
+    .tabs { display: flex; justify-content: center; margin: 20px; }
+    .tabs button { padding: 10px 20px; border: none; cursor: pointer; margin: 0 10px; }
+    .container { display: none; padding: 20px; }
+    .container.active { display: block; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>ChickenLitter4U</h1>
+    <p>Login to manage listings</p>
+  </header>
+  <div class="tabs">
+    <button id="loginTab">Login</button>
+    <button id="postTab" disabled>Post Listing</button>
+    <button id="listingsTab">View Listings</button>
+  </div>
+  <div id="loginSection" class="container active">
+    <h2>Login</h2>
+    <form id="loginForm">
+      <input id="username" placeholder="Username" required />
+      <input id="password" placeholder="Password" type="password" required />
+      <button type="submit">Login</button>
+    </form>
+  </div>
+  <div id="postSection" class="container">
+    <h2>Post Listing</h2>
+    <form id="postForm">
+      <input id="item" placeholder="Item Name" required />
+      <input id="quantity" placeholder="Quantity" type="number" required />
+      <button type="submit">Post</button>
+    </form>
+  </div>
+  <div id="listingsSection" class="container">
+    <h2>Available Listings</h2>
+    <ul id="listings"></ul>
+  </div>
+  <script>
+    const BASE_URL = "http://localhost:3000"; // Replace with your backend's deployed URL if needed
 
-// Allow cross-origin requests
-app.use(cors());
+    // Tabs
+    const tabs = {
+      login: document.getElementById("loginSection"),
+      post: document.getElementById("postSection"),
+      listings: document.getElementById("listingsSection"),
+    };
+    const tabButtons = {
+      login: document.getElementById("loginTab"),
+      post: document.getElementById("postTab"),
+      listings: document.getElementById("listingsTab"),
+    };
+    function showTab(tab) {
+      Object.values(tabs).forEach(t => t.classList.remove("active"));
+      tabs[tab].classList.add("active");
+    }
+    tabButtons.login.addEventListener("click", () => showTab("login"));
+    tabButtons.post.addEventListener("click", () => showTab("post"));
+    tabButtons.listings.addEventListener("click", () => showTab("listings"));
 
-// Allow JSON in POST requests
-app.use(express.json());
+    // Login
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+      const res = await fetch(`${BASE_URL}/api/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+      if (res.ok) {
+        const { token } = await res.json();
+        localStorage.setItem("authToken", token);
+        alert("Login successful");
+        tabButtons.post.disabled = false;
+        showTab("post");
+      } else {
+        alert("Invalid login");
+      }
+    });
 
-// In-memory array to store listings
-let listings = [];
+    // Post Listing
+    document.getElementById("postForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const token = localStorage.getItem("authToken");
+      if (!token) return alert("You must log in first");
+      const item = document.getElementById("item").value;
+      const quantity = document.getElementById("quantity").value;
+      const res = await fetch(`${BASE_URL}/api/listings`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ item, quantity }),
+      });
+      if (res.ok) {
+        alert("Listing posted!");
+        showTab("listings");
+      } else {
+        alert("Failed to post listing");
+      }
+    });
 
-// Simple user database (example users)
-const users = [
-  { username: "testUser", password: "testPass" },
-  { username: "admin", password: "admin123" },
-];
-
-// A simple token for demo purposes
-const VALID_TOKEN = "abc123";
-
-// Authenticate user and return a token
-app.post("/api/login", (req, res) => {
-  const { username, password } = req.body;
-  const user = users.find(u => u.username === username && u.password === password);
-
-  if (!user) {
-    return res.status(401).json({ error: "Invalid username or password" });
-  }
-
-  // Return a token (In real apps, generate a secure token dynamically)
-  res.json({ token: VALID_TOKEN });
-});
-
-// Middleware to check for valid token
-function checkAuth(req, res, next) {
-  const token = req.headers.authorization?.split(" ")[1]; // Extract token from "Bearer token"
-  if (token !== VALID_TOKEN) {
-    return res.status(401).json({ error: "Unauthorized" });
-  }
-  next(); // Token is valid, proceed
-}
-
-// Return all listings (public access)
-app.get("/api/listings", (req, res) => {
-  res.json(listings);
-});
-
-// Add a new listing (requires authentication)
-app.post("/api/listings", checkAuth, (req, res) => {
-  listings.push(req.body);
-  res.status(201).send("Listing added");
-});
-
-// Delete a listing by index (requires authentication)
-app.delete("/api/listings/:index", checkAuth, (req, res) => {
-  const idx = parseInt(req.params.index);
-  if (listings[idx]) {
-    listings.splice(idx, 1);
-    return res.send("Listing deleted");
-  }
-  res.status(404).send("Not found");
-});
-
-// Pick a port, or use what's in the environment
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+    // View Listings
+    async function loadListings() {
+      const res = await fetch(`${BASE_URL}/api/listings`);
+      const listings = await res.json();
+      const ul = document.getElementById("listings");
+      ul.innerHTML = listings.map(l => `<li>${l.item} - ${l.quantity}</li>`).join("");
+    }
+    tabButtons.listings.addEventListener("click", loadListings);
+  </script>
+</body>
+</html>
