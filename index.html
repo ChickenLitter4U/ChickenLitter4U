@@ -86,11 +86,13 @@
     <p>Your one-stop solution for buying and selling chicken litter!</p>
   </header>
 
+  <!-- Make Post Listing the default active tab -->
   <div class="tabs">
-    <button id="postTab">Post Listing</button>
-    <button id="listingsTab" class="active">View Listings</button>
+    <button id="postTab" class="active">Post Listing</button>
+    <button id="listingsTab">View Listings</button>
   </div>
 
+  <!-- Post section active by default -->
   <div id="postSection" class="container active">
     <h2>Create a New Listing</h2>
     <form id="listingForm">
@@ -112,6 +114,7 @@
     </form>
   </div>
 
+  <!-- Listings section not active initially -->
   <div id="listingsSection" class="container">
     <h2>Available Listings</h2>
     <div id="listings"></div>
@@ -123,94 +126,104 @@
   </footer>
 
   <script>
-    const imageUpload=document.getElementById("imageUpload");
-    const fileName=document.getElementById("fileName");
-    const imagePreview=document.getElementById("imagePreview");
+    const imageUpload = document.getElementById("imageUpload");
+    const fileName = document.getElementById("fileName");
+    const imagePreview = document.getElementById("imagePreview");
 
-    imageUpload.addEventListener("change", e=>{
-      const file=e.target.files[0];
-      if(file){
-        fileName.textContent=file.name;
-        const reader=new FileReader();
-        reader.onload=ev=>{
-          imagePreview.src=ev.target.result;
-          imagePreview.style.display="block";
+    imageUpload.addEventListener("change", e => {
+      const file = e.target.files[0];
+      if (file) {
+        fileName.textContent = file.name;
+        const reader = new FileReader();
+        reader.onload = ev => {
+          imagePreview.src = ev.target.result;
+          imagePreview.style.display = "block";
         };
         reader.readAsDataURL(file);
       } else {
-        fileName.textContent="No file chosen";
-        imagePreview.style.display="none";
+        fileName.textContent = "No file chosen";
+        imagePreview.style.display = "none";
       }
     });
 
-    const form=document.getElementById("listingForm");
-    form.addEventListener("submit", e=>{
+    const form = document.getElementById("listingForm");
+    form.addEventListener("submit", e => {
       e.preventDefault();
-      const sellerName=document.getElementById("sellerName").value;
-      const phone=document.getElementById("phone").value;
-      const address=document.getElementById("address").value;
-      const city=document.getElementById("city").value;
-      const state=document.getElementById("state").value;
-      const zip=document.getElementById("zip").value;
-      const quantity=document.getElementById("quantity").value;
-      const description=document.getElementById("description").value;
-      const date=new Date().toLocaleString();
-      const imageUrl=(imagePreview.style.display==="block")?imagePreview.src:"";
+      const sellerName = document.getElementById("sellerName").value;
+      const phone = document.getElementById("phone").value;
+      const address = document.getElementById("address").value;
+      const city = document.getElementById("city").value;
+      const state = document.getElementById("state").value;
+      const zip = document.getElementById("zip").value;
+      const quantity = document.getElementById("quantity").value;
+      const description = document.getElementById("description").value;
+      const date = new Date().toLocaleString();
+      const imageUrl = (imagePreview.style.display === "block") ? imagePreview.src : "";
 
-      const listingData={
-        sellerName, phone, address, city, state, zip,
-        quantity, description,
-        location:`${address}, ${city}, ${state}, ${zip}`, date, imageUrl
+      const listingData = {
+        sellerName,
+        phone,
+        address,
+        city,
+        state,
+        zip,
+        quantity,
+        description,
+        location: `${address}, ${city}, ${state}, ${zip}`,
+        date,
+        imageUrl
       };
 
-      const listings=JSON.parse(localStorage.getItem("listings"))||[];
+      const listings = JSON.parse(localStorage.getItem("listings")) || [];
       listings.push(listingData);
-      localStorage.setItem("listings",JSON.stringify(listings));
+      localStorage.setItem("listings", JSON.stringify(listings));
 
+      // After submit, switch to Listings view
       listingsSection.classList.add("active");
       postSection.classList.remove("active");
       listingsTab.classList.add("active");
       postTab.classList.remove("active");
 
       form.reset();
-      imagePreview.style.display="none";
-      fileName.textContent="No file chosen";
+      imagePreview.style.display = "none";
+      fileName.textContent = "No file chosen";
       renderListings();
     });
 
-    const postTab=document.getElementById("postTab");
-    const listingsTab=document.getElementById("listingsTab");
-    const postSection=document.getElementById("postSection");
-    const listingsSection=document.getElementById("listingsSection");
+    const postTab = document.getElementById("postTab");
+    const listingsTab = document.getElementById("listingsTab");
+    const postSection = document.getElementById("postSection");
+    const listingsSection = document.getElementById("listingsSection");
 
-    const activateSection=section=>{
-      [postSection,listingsSection].forEach(s=>s.classList.remove("active"));
+    const activateSection = section => {
+      [postSection, listingsSection].forEach(s => s.classList.remove("active"));
       section.classList.add("active");
     };
 
-    postTab.addEventListener("click",()=>{
+    postTab.addEventListener("click", () => {
       activateSection(postSection);
       postTab.classList.add("active");
       listingsTab.classList.remove("active");
     });
-    listingsTab.addEventListener("click",()=>{
+
+    listingsTab.addEventListener("click", () => {
       activateSection(listingsSection);
       listingsTab.classList.add("active");
       postTab.classList.remove("active");
       renderListings();
     });
 
-    const renderListings=()=>{
-      const listingsContainer=document.getElementById("listings");
-      listingsContainer.innerHTML="";
-      const listings=JSON.parse(localStorage.getItem("listings"))||[];
-      listings.forEach((listing,i)=>{
-        const div=document.createElement("div");
+    const renderListings = () => {
+      const listingsContainer = document.getElementById("listings");
+      listingsContainer.innerHTML = "";
+      const listings = JSON.parse(localStorage.getItem("listings")) || [];
+      listings.forEach((listing, i) => {
+        const div = document.createElement("div");
         div.classList.add("listing-card");
-        div.innerHTML=`
+        div.innerHTML = `
           <h3>${listing.sellerName}</h3>
           <p>${listing.description}</p>
-          ${listing.imageUrl?`<img src="${listing.imageUrl}" alt="Image"/>`:""}
+          ${listing.imageUrl ? `<img src="${listing.imageUrl}" alt="Image"/>` : ""}
           <p><strong>Location:</strong> ${listing.location}</p>
           <p><strong>Quantity:</strong> ${listing.quantity} tons</p>
           <p><strong>Date:</strong> ${listing.date}</p>
@@ -221,19 +234,28 @@
       });
     };
 
-    function refreshListings(){ renderListings(); }
+    function refreshListings() {
+      renderListings();
+    }
 
-    function editListing(i){
-      const listings=JSON.parse(localStorage.getItem("listings"))||[];
-      const l=listings[i];
-      sellerName.value=l.sellerName; phone.value=l.phone; address.value=l.address;
-      city.value=l.city; state.value=l.state; zip.value=l.zip;
-      quantity.value=l.quantity; description.value=l.description;
-      if(l.imageUrl){
-        imagePreview.src=l.imageUrl; imagePreview.style.display="block";
-        fileName.textContent="File chosen";
+    function editListing(i) {
+      const listings = JSON.parse(localStorage.getItem("listings")) || [];
+      const l = listings[i];
+      sellerName.value = l.sellerName;
+      phone.value = l.phone;
+      address.value = l.address;
+      city.value = l.city;
+      state.value = l.state;
+      zip.value = l.zip;
+      quantity.value = l.quantity;
+      description.value = l.description;
+      if (l.imageUrl) {
+        imagePreview.src = l.imageUrl;
+        imagePreview.style.display = "block";
+        fileName.textContent = "File chosen";
       } else {
-        imagePreview.style.display="none"; fileName.textContent="No file chosen";
+        imagePreview.style.display = "none";
+        fileName.textContent = "No file chosen";
       }
       deleteListing(i);
       activateSection(postSection);
@@ -241,13 +263,14 @@
       listingsTab.classList.remove("active");
     }
 
-    function deleteListing(i){
-      const listings=JSON.parse(localStorage.getItem("listings"))||[];
-      listings.splice(i,1);
-      localStorage.setItem("listings",JSON.stringify(listings));
+    function deleteListing(i) {
+      const listings = JSON.parse(localStorage.getItem("listings")) || [];
+      listings.splice(i, 1);
+      localStorage.setItem("listings", JSON.stringify(listings));
       renderListings();
     }
 
+    // Render listings on page load, but keep Post Listing as default visible section
     renderListings();
   </script>
 </body>
