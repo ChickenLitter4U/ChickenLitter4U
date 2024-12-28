@@ -1,408 +1,254 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChickenLitter4U</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #F5F5F5;
-            color: #333;
-        }
-        header {
-            background-color: #8B0000;
-            color: white;
-            text-align: center;
-            padding: 2rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .tabs {
-            display: flex;
-            justify-content: center;
-            margin: 1.5rem 0;
-            border-bottom: 2px solid #8B0000;
-        }
-        .tabs button {
-            padding: 1rem 2rem;
-            margin: 0;
-            border: 2px solid transparent;
-            background-color: white;
-            color: #8B0000;
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: color 0.3s ease, transform 0.2s ease, background-color 0.3s ease, border-color 0.3s ease;
-        }
-        .tabs button.active {
-            border-bottom: 4px solid #8B0000;
-            background-color: white;
-            color: #8B0000;
-            transform: scale(1.1);
-        }
-        .tabs button:hover {
-            background-color: #CD5C5C;
-            border-color: #8B0000;
-            color: white;
-        }
-        .container {
-            max-width: 900px;
-            margin: 2rem auto;
-            background: white;
-            padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            display: none;
-        }
-        .container.active {
-            display: block;
-        }
-        h1, h2 {
-            text-align: center;
-            color: white;
-        }
-        #postSection h2 {
-            color: #8B0000;
-        }
-        form {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-        }
-        input, textarea, button {
-            padding: 0.9rem;
-            font-size: 1rem;
-            border: 1px solid #8B0000;
-            border-radius: 5px;
-            background-color: white;
-            color: #333;
-            transition: border-color 0.3s ease;
-        }
-        input:focus, textarea:focus {
-            border-color: #CD5C5C;
-            outline: none;
-        }
-        button {
-            background-color: #8B0000;
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-        }
-        button:hover {
-            background-color: #CD5C5C;
-            transform: scale(1.05);
-        }
-
-        /* New styles for file upload */
-        .file-upload-container {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            margin-top: 1rem;
-        }
-
-        .file-upload-container label {
-            font-weight: bold;
-            color: #8B0000;
-        }
-
-        .file-upload-container input[type="file"] {
-            padding: 0.5rem;
-            margin-top: 0.5rem;
-            border-radius: 5px;
-            border: 1px solid #8B0000;
-        }
-
-        .file-upload-container input[type="file"]:hover {
-            background-color: #f1f1f1;
-        }
-
-        #imagePreview {
-            display: block;
-            margin-top: 1rem;
-            max-width: 100%;
-            height: auto;
-            border-radius: 5px;
-            border: 1px solid #8B0000;
-        }
-
-        /* Grid layout for the listings (Two columns) */
-        #listings {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1rem;
-        }
-
-        .listing-card {
-            background: #f9f9f9;
-            border: 1px solid #ddd;
-            padding: 1rem;
-            border-radius: 15px; /* Curved edges */
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .listing-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .listing-card img {
-            width: 100%;
-            height: auto;
-            border-radius: 5px;
-            margin-bottom: 1rem;
-        }
-
-        .listing-card button {
-            background-color: #8B0000;
-            color: white;
-            padding: 0.5rem;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: background-color 0.3s ease;
-        }
-
-        .listing-card button:hover {
-            background-color: #CD5C5C;
-        }
-
-        footer {
-            text-align: center;
-            padding: 1rem;
-            background-color: #8B0000;
-            color: white;
-            font-size: 0.9rem;
-            margin-top: 2rem;
-        }
-
-        /* Refresh button style positioned below the dark red line but in the white area */
-        .refresh-button {
-            background-color: #8B0000;
-            color: white;
-            padding: 0.5rem;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: background-color 0.3s ease;
-            position: absolute;
-            left: 20px;
-            top: 80px; /* Positioned just below the dark red line */
-        }
-
-        .refresh-button:hover {
-            background-color: #CD5C5C;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ChickenLitter4U</title>
+  <style>
+    body {
+      margin:0; padding:0; font-family: Segoe UI, sans-serif;
+      background:#f5f5f5; color:#333;
+    }
+    header {
+      background:#8b0000; color:#fff; text-align:center;
+      padding:2rem; box-shadow:0 4px 6px rgba(0,0,0,0.1);
+    }
+    .tabs {
+      display:flex; justify-content:center; border-bottom:2px solid #8b0000;
+    }
+    .tabs button {
+      padding:1rem 2rem; background:#fff; color:#8b0000; font-size:1.2rem;
+      border:2px solid transparent; cursor:pointer; transition:0.3s;
+    }
+    .tabs button.active {
+      border-bottom:4px solid #8b0000; transform:scale(1.1);
+    }
+    .tabs button:hover {
+      background:#cd5c5c; color:#fff; border-color:#8b0000;
+    }
+    .container {
+      max-width:900px; margin:2rem auto; background:#fff; padding:2rem;
+      border-radius:8px; box-shadow:0 4px 6px rgba(0,0,0,0.1); display:none;
+    }
+    .container.active { display:block; }
+    h1, h2 { margin:0; }
+    #postSection h2 { color:#8b0000; text-align:center; }
+    form {
+      display:grid; gap:1rem;
+    }
+    input, textarea, button {
+      padding:0.9rem; font-size:1rem; border:1px solid #8b0000;
+      border-radius:5px; background:#fff; transition:0.3s;
+    }
+    input:focus, textarea:focus { border-color:#cd5c5c; outline:none; }
+    button {
+      background:#8b0000; color:#fff; border:none; cursor:pointer;
+      transition:0.3s;
+    }
+    button:hover { background:#cd5c5c; transform:scale(1.05); }
+    .file-upload-container { margin-top:1rem; }
+    .file-upload-container label { color:#8b0000; font-weight:bold; }
+    .file-upload-container input[type="file"] {
+      margin-top:0.5rem; border-radius:5px; border:1px solid #8b0000;
+    }
+    #imagePreview {
+      display:none; margin-top:1rem; max-width:100%; border:1px solid #8b0000;
+      border-radius:5px;
+    }
+    #listings {
+      display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+      gap:1rem;
+    }
+    .listing-card {
+      background:#f9f9f9; border:1px solid #ddd; padding:1rem;
+      border-radius:15px; box-shadow:0 2px 4px rgba(0,0,0,0.1);
+      transition:0.2s;
+    }
+    .listing-card:hover { transform:translateY(-5px); box-shadow:0 4px 8px rgba(0,0,0,0.2); }
+    .listing-card img {
+      width:100%; border-radius:5px; margin-bottom:1rem;
+    }
+    footer {
+      text-align:center; padding:1rem; background:#8b0000; color:#fff;
+      font-size:0.9rem; margin-top:2rem;
+    }
+    .refresh-button {
+      position:absolute; left:20px; top:80px; padding:0.5rem; background:#8b0000;
+      color:#fff; border:none; border-radius:5px; cursor:pointer; font-size:1rem;
+      transition:0.3s;
+    }
+    .refresh-button:hover { background:#cd5c5c; }
+  </style>
 </head>
 <body>
-    <header>
-        <h1>ChickenLitter4U</h1>
-        <p>Your one-stop solution for buying and selling chicken litter!</p>
-    </header>
+  <header>
+    <h1>ChickenLitter4U</h1>
+    <p>Your one-stop solution for buying and selling chicken litter!</p>
+  </header>
 
-    <div class="tabs">
-        <button id="postTab">Post Listing</button>
-        <button id="listingsTab" class="active">View Listings</button>
-    </div>
+  <div class="tabs">
+    <button id="postTab">Post Listing</button>
+    <button id="listingsTab" class="active">View Listings</button>
+  </div>
 
-    <div id="postSection" class="container active">
-        <h2>Create a New Listing</h2>
-        <form id="listingForm">
-            <input type="text" id="sellerName" placeholder="Your Name" required>
-            <input type="text" id="phone" placeholder="Phone Number" required>
-            <input type="text" id="address" placeholder="Address" required>
-            <input type="text" id="city" placeholder="City" required>
-            <input type="text" id="state" placeholder="State" required>
-            <input type="text" id="zip" placeholder="Zip Code" required>
-            <input type="number" id="quantity" placeholder="Quantity (in tons)" required>
-            <textarea id="description" placeholder="Description" rows="4"></textarea>
+  <div id="postSection" class="container active">
+    <h2>Create a New Listing</h2>
+    <form id="listingForm">
+      <input type="text" id="sellerName" placeholder="Your Name" required />
+      <input type="text" id="phone" placeholder="Phone Number" required />
+      <input type="text" id="address" placeholder="Address" required />
+      <input type="text" id="city" placeholder="City" required />
+      <input type="text" id="state" placeholder="State" required />
+      <input type="text" id="zip" placeholder="Zip Code" required />
+      <input type="number" id="quantity" placeholder="Quantity (in tons)" required />
+      <textarea id="description" placeholder="Description" rows="4"></textarea>
+      <div class="file-upload-container">
+        <label for="imageUpload">Upload a photo:</label>
+        <input type="file" id="imageUpload" accept="image/*" />
+        <span id="fileName">No file chosen</span>
+        <img id="imagePreview" alt="Preview" />
+      </div>
+      <button type="submit">Post Listing</button>
+    </form>
+  </div>
 
-            <!-- Image upload section -->
-            <div class="file-upload-container">
-                <label for="imageUpload">Upload a photo of the chicken litter:</label>
-                <input type="file" id="imageUpload" accept="image/*">
-                <span id="fileName">No file chosen</span>
-                <img id="imagePreview" src="" alt="Image Preview" style="display:none;">
-            </div>
+  <div id="listingsSection" class="container">
+    <h2>Available Listings</h2>
+    <div id="listings"></div>
+    <button class="refresh-button" onclick="refreshListings()">Refresh Listings</button>
+  </div>
 
-            <button type="submit">Post Listing</button>
-        </form>
-    </div>
+  <footer>
+    <p>© 2024 ChickenLitter4U. All rights reserved.</p>
+  </footer>
 
-    <div id="listingsSection" class="container">
-        <h2>Available Listings</h2>
-        <div id="listings">
-            <!-- Listings will appear here -->
-        </div>
-        <button class="refresh-button" onclick="refreshListings()">Refresh Listings</button>
-    </div>
+  <script>
+    const imageUpload=document.getElementById("imageUpload");
+    const fileName=document.getElementById("fileName");
+    const imagePreview=document.getElementById("imagePreview");
 
-    <footer>
-        <p>© 2024 ChickenLitter4U. All rights reserved. Created on December 19, 2024.</p>
-    </footer>
-
-    <script>
-        const imageUpload = document.getElementById('imageUpload');
-        const fileName = document.getElementById('fileName');
-        const imagePreview = document.getElementById('imagePreview');
-
-        // Show the image preview when a file is selected
-        imageUpload.addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            if (file) {
-                fileName.textContent = file.name;  // Update the file name text
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    imagePreview.src = e.target.result;
-                    imagePreview.style.display = 'block';  // Show the image preview
-                };
-                reader.readAsDataURL(file);
-            } else {
-                fileName.textContent = "No file chosen";  // Reset text if no file is chosen
-                imagePreview.style.display = 'none';  // Hide preview if no file is selected
-            }
-        });
-
-        const form = document.getElementById('listingForm');
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-
-            const sellerName = document.getElementById('sellerName').value;
-            const phone = document.getElementById('phone').value;
-            const address = document.getElementById('address').value;
-            const city = document.getElementById('city').value;
-            const state = document.getElementById('state').value;
-            const zip = document.getElementById('zip').value;
-            const quantity = document.getElementById('quantity').value;
-            const description = document.getElementById('description').value;
-            const location = `${address}, ${city}, ${state}, ${zip}`;
-            const date = new Date().toLocaleString();
-
-            // Get the image URL from the preview (only if an image is selected)
-            const imageUrl = imagePreview.style.display === 'block' ? imagePreview.src : '';
-
-            const listingData = {
-                sellerName,
-                phone,
-                address,
-                city,
-                state,
-                zip,
-                quantity,
-                description,
-                location,
-                date,
-                imageUrl
-            };
-
-            // Save the listing (simulated by localStorage here)
-            const listings = JSON.parse(localStorage.getItem('listings')) || [];
-            listings.push(listingData);
-            localStorage.setItem('listings', JSON.stringify(listings));
-
-            // Switch to View Listings after posting
-            activateSection(listingsSection);
-
-            // Mark the View Listings tab as active
-            listingsTab.classList.add('active');
-            postTab.classList.remove('active');
-
-            form.reset();
-            imagePreview.style.display = 'none'; // Hide the preview after posting
-            fileName.textContent = 'No file chosen'; // Reset file name text
-
-            renderListings(); // Re-render listings
-        });
-
-        const postTab = document.getElementById('postTab');
-        const listingsTab = document.getElementById('listingsTab');
-        const postSection = document.getElementById('postSection');
-        const listingsSection = document.getElementById('listingsSection');
-
-        // Tab Switching Function
-        const activateSection = (sectionToShow) => {
-            const sections = [postSection, listingsSection];
-            sections.forEach(section => {
-                section.classList.remove('active');
-            });
-            sectionToShow.classList.add('active');
+    imageUpload.addEventListener("change", e=>{
+      const file=e.target.files[0];
+      if(file){
+        fileName.textContent=file.name;
+        const reader=new FileReader();
+        reader.onload=ev=>{
+          imagePreview.src=ev.target.result;
+          imagePreview.style.display="block";
         };
+        reader.readAsDataURL(file);
+      } else {
+        fileName.textContent="No file chosen";
+        imagePreview.style.display="none";
+      }
+    });
 
-        postTab.addEventListener('click', () => {
-            activateSection(postSection);
-            postTab.classList.add('active');
-            listingsTab.classList.remove('active');
-        });
+    const form=document.getElementById("listingForm");
+    form.addEventListener("submit", e=>{
+      e.preventDefault();
+      const sellerName=document.getElementById("sellerName").value;
+      const phone=document.getElementById("phone").value;
+      const address=document.getElementById("address").value;
+      const city=document.getElementById("city").value;
+      const state=document.getElementById("state").value;
+      const zip=document.getElementById("zip").value;
+      const quantity=document.getElementById("quantity").value;
+      const description=document.getElementById("description").value;
+      const date=new Date().toLocaleString();
+      const imageUrl=(imagePreview.style.display==="block")?imagePreview.src:"";
 
-        listingsTab.addEventListener('click', () => {
-            activateSection(listingsSection);
-            postTab.classList.remove('active');
-            listingsTab.classList.add('active');
-            renderListings();
-        });
+      const listingData={
+        sellerName, phone, address, city, state, zip,
+        quantity, description,
+        location:`${address}, ${city}, ${state}, ${zip}`, date, imageUrl
+      };
 
-        // Render Listings
-        const renderListings = () => {
-            const listingsContainer = document.getElementById('listings');
-            listingsContainer.innerHTML = ''; // Clear any existing listings
-            const listings = JSON.parse(localStorage.getItem('listings')) || [];
-            listings.forEach((listing, index) => {
-                const listingDiv = document.createElement('div');
-                listingDiv.classList.add('listing-card');
-                listingDiv.innerHTML = `
-                    <h3>${listing.sellerName}</h3>
-                    <p>${listing.description}</p>
-                    ${listing.imageUrl ? `<img src="${listing.imageUrl}" alt="Image">` : ''}
-                    <p><strong>Location:</strong> ${listing.location}</p>
-                    <p><strong>Quantity:</strong> ${listing.quantity} tons</p>
-                    <p><strong>Posted on:</strong> ${listing.date}</p>
-                    <button onclick="editListing(${index})">Edit</button>
-                    <button onclick="deleteListing(${index})">Delete</button>
-                `;
-                listingsContainer.appendChild(listingDiv);
-            });
-        };
+      const listings=JSON.parse(localStorage.getItem("listings"))||[];
+      listings.push(listingData);
+      localStorage.setItem("listings",JSON.stringify(listings));
 
-        // Refresh Listings
-        function refreshListings() {
-            renderListings(); // Re-render listings from localStorage
-        }
+      listingsSection.classList.add("active");
+      postSection.classList.remove("active");
+      listingsTab.classList.add("active");
+      postTab.classList.remove("active");
 
-        // Edit Listing
-        function editListing(index) {
-            const listings = JSON.parse(localStorage.getItem('listings')) || [];
-            const listing = listings[index];
-            document.getElementById('sellerName').value = listing.sellerName;
-            document.getElementById('phone').value = listing.phone;
-            document.getElementById('address').value = listing.address;
-            document.getElementById('city').value = listing.city;
-            document.getElementById('state').value = listing.state;
-            document.getElementById('zip').value = listing.zip;
-            document.getElementById('quantity').value = listing.quantity;
-            document.getElementById('description').value = listing.description;
-            imagePreview.src = listing.imageUrl;
-            imagePreview.style.display = 'block';
-            document.getElementById('fileName').textContent = listing.imageUrl ? 'File chosen' : 'No file chosen';
-            deleteListing(index); // Remove the old listing before submitting the edit
-        }
+      form.reset();
+      imagePreview.style.display="none";
+      fileName.textContent="No file chosen";
+      renderListings();
+    });
 
-        // Delete Listing
-        function deleteListing(index) {
-            const listings = JSON.parse(localStorage.getItem('listings')) || [];
-            listings.splice(index, 1);
-            localStorage.setItem('listings', JSON.stringify(listings));
-            renderListings(); // Re-render the listings
-        }
+    const postTab=document.getElementById("postTab");
+    const listingsTab=document.getElementById("listingsTab");
+    const postSection=document.getElementById("postSection");
+    const listingsSection=document.getElementById("listingsSection");
 
-        // Initial render of listings when page loads
-        renderListings();
-    </script>
+    const activateSection=section=>{
+      [postSection,listingsSection].forEach(s=>s.classList.remove("active"));
+      section.classList.add("active");
+    };
+
+    postTab.addEventListener("click",()=>{
+      activateSection(postSection);
+      postTab.classList.add("active");
+      listingsTab.classList.remove("active");
+    });
+    listingsTab.addEventListener("click",()=>{
+      activateSection(listingsSection);
+      listingsTab.classList.add("active");
+      postTab.classList.remove("active");
+      renderListings();
+    });
+
+    const renderListings=()=>{
+      const listingsContainer=document.getElementById("listings");
+      listingsContainer.innerHTML="";
+      const listings=JSON.parse(localStorage.getItem("listings"))||[];
+      listings.forEach((listing,i)=>{
+        const div=document.createElement("div");
+        div.classList.add("listing-card");
+        div.innerHTML=`
+          <h3>${listing.sellerName}</h3>
+          <p>${listing.description}</p>
+          ${listing.imageUrl?`<img src="${listing.imageUrl}" alt="Image"/>`:""}
+          <p><strong>Location:</strong> ${listing.location}</p>
+          <p><strong>Quantity:</strong> ${listing.quantity} tons</p>
+          <p><strong>Date:</strong> ${listing.date}</p>
+          <button onclick="editListing(${i})">Edit</button>
+          <button onclick="deleteListing(${i})">Delete</button>
+        `;
+        listingsContainer.appendChild(div);
+      });
+    };
+
+    function refreshListings(){ renderListings(); }
+
+    function editListing(i){
+      const listings=JSON.parse(localStorage.getItem("listings"))||[];
+      const l=listings[i];
+      sellerName.value=l.sellerName; phone.value=l.phone; address.value=l.address;
+      city.value=l.city; state.value=l.state; zip.value=l.zip;
+      quantity.value=l.quantity; description.value=l.description;
+      if(l.imageUrl){
+        imagePreview.src=l.imageUrl; imagePreview.style.display="block";
+        fileName.textContent="File chosen";
+      } else {
+        imagePreview.style.display="none"; fileName.textContent="No file chosen";
+      }
+      deleteListing(i);
+      activateSection(postSection);
+      postTab.classList.add("active");
+      listingsTab.classList.remove("active");
+    }
+
+    function deleteListing(i){
+      const listings=JSON.parse(localStorage.getItem("listings"))||[];
+      listings.splice(i,1);
+      localStorage.setItem("listings",JSON.stringify(listings));
+      renderListings();
+    }
+
+    renderListings();
+  </script>
 </body>
 </html>
