@@ -5,7 +5,92 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ChickenLitter4U</title>
   <style>
-    /* Same CSS as before */
+    body {
+      margin:0; padding:0; font-family: Segoe UI, sans-serif;
+      background:#f5f5f5; color:#333;
+    }
+    header {
+      background:#8b0000; color:#fff; text-align:center;
+      padding:2rem; box-shadow:0 4px 6px rgba(0,0,0,0.1);
+    }
+    .tabs {
+      display:flex; justify-content:center; border-bottom:2px solid #8b0000;
+    }
+    .tabs button {
+      padding:1rem 2rem; background:#fff; color:#8b0000; font-size:1.2rem;
+      border:2px solid transparent; cursor:pointer; transition:0.3s;
+    }
+    .tabs button.active {
+      border-bottom:4px solid #8b0000; transform:scale(1.1);
+    }
+    .tabs button:hover {
+      background:#cd5c5c; color:#fff; border-color:#8b0000;
+    }
+    .container {
+      max-width:900px; margin:2rem auto; background:#fff; padding:2rem;
+      border-radius:8px; box-shadow:0 4px 6px rgba(0,0,0,0.1); display:none;
+    }
+    .container.active { display:block; }
+    h1, h2 { margin:0; }
+    #postSection h2 { color:#8b0000; text-align:center; }
+    form {
+      display:grid; gap:1rem;
+      grid-template-columns: 1fr 1fr 1fr;  /* example for a wide layout */
+    }
+    form > input, form > textarea {
+      grid-column: span 1;
+    }
+    form > input:nth-of-type(1),
+    form > input:nth-of-type(2),
+    form > input:nth-of-type(3),
+    form > input:nth-of-type(4),
+    form > input:nth-of-type(5),
+    form > input:nth-of-type(6),
+    form > input:nth-of-type(7),
+    form > textarea {
+      width:95%;
+    }
+    input, textarea, button {
+      padding:0.9rem; font-size:1rem; border:1px solid #8b0000;
+      border-radius:5px; background:#fff; transition:0.3s;
+    }
+    input:focus, textarea:focus { border-color:#cd5c5c; outline:none; }
+    button {
+      background:#8b0000; color:#fff; border:none; cursor:pointer;
+      transition:0.3s;
+    }
+    button:hover { background:#cd5c5c; transform:scale(1.05); }
+    .file-upload-container {
+      margin-top:1rem; grid-column: span 3;
+    }
+    .file-upload-container label { color:#8b0000; font-weight:bold; }
+    #imagePreview {
+      display:none; margin-top:1rem; max-width:100%; border:1px solid #8b0000;
+      border-radius:5px;
+    }
+    #listings {
+      display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+      gap:1rem; margin-top:1rem;
+    }
+    .listing-card {
+      background:#f9f9f9; border:1px solid #ddd; padding:1rem;
+      border-radius:15px; box-shadow:0 2px 4px rgba(0,0,0,0.1);
+      transition:0.2s;
+    }
+    .listing-card:hover { transform:translateY(-5px); box-shadow:0 4px 8px rgba(0,0,0,0.2); }
+    .listing-card img {
+      width:100%; border-radius:5px; margin-bottom:1rem;
+    }
+    footer {
+      text-align:center; padding:1rem; background:#8b0000; color:#fff;
+      font-size:0.9rem; margin-top:2rem;
+    }
+    .refresh-button {
+      margin-top:1rem; background:#8b0000; color:#fff; padding:0.5rem;
+      border:none; border-radius:5px; cursor:pointer; font-size:1rem;
+      transition:0.3s;
+    }
+    .refresh-button:hover { background:#cd5c5c; }
   </style>
 </head>
 <body>
@@ -14,13 +99,11 @@
     <p>Your one-stop solution for buying and selling chicken litter!</p>
   </header>
 
-  <!-- Tabs -->
   <div class="tabs">
     <button id="postTab" class="active">Post Listing</button>
     <button id="listingsTab">View Listings</button>
   </div>
 
-  <!-- Post section -->
   <div id="postSection" class="container active">
     <h2>Create a New Listing</h2>
     <form id="listingForm">
@@ -38,11 +121,10 @@
         <span id="fileName">No file chosen</span>
         <img id="imagePreview" alt="Preview" />
       </div>
-      <button type="submit">Post Listing</button>
+      <button type="submit" style="grid-column: span 3;">Post Listing</button>
     </form>
   </div>
 
-  <!-- Listings section -->
   <div id="listingsSection" class="container">
     <h2>Available Listings</h2>
     <div id="listings"></div>
@@ -54,11 +136,13 @@
   </footer>
 
   <script>
-    // -- File upload preview --
+    // Replace with your own Render URL
+    const RENDER_URL = "https://chickenlitter4u.onrender.com/api/listings";
+
+    // File upload preview
     const imageUpload = document.getElementById("imageUpload");
     const fileName = document.getElementById("fileName");
     const imagePreview = document.getElementById("imagePreview");
-
     imageUpload.addEventListener("change", e => {
       const file = e.target.files[0];
       if (file) {
@@ -75,8 +159,13 @@
       }
     });
 
-    // -- Form submission & fetching data from server --
+    // Form submission
     const form = document.getElementById("listingForm");
+    const postSection = document.getElementById("postSection");
+    const listingsSection = document.getElementById("listingsSection");
+    const postTab = document.getElementById("postTab");
+    const listingsTab = document.getElementById("listingsTab");
+
     form.addEventListener("submit", async e => {
       e.preventDefault();
       const sellerName = document.getElementById("sellerName").value;
@@ -104,14 +193,14 @@
         imageUrl
       };
 
-      // POST the new listing to your backend
-      await fetch("https://chickenlitter4u.onrender.com/api/listings", {
+      // POST to Render backend
+      await fetch(RENDER_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newListing)
       });
 
-      // Switch to Listings view
+      // Switch tabs
       listingsSection.classList.add("active");
       postSection.classList.remove("active");
       listingsTab.classList.add("active");
@@ -122,20 +211,14 @@
       imagePreview.style.display = "none";
       fileName.textContent = "No file chosen";
 
-      // Re-render listings
       renderListings();
     });
 
-    // -- Tab controls --
-    const postTab = document.getElementById("postTab");
-    const listingsTab = document.getElementById("listingsTab");
-    const postSection = document.getElementById("postSection");
-    const listingsSection = document.getElementById("listingsSection");
-
-    const activateSection = section => {
+    // Tab logic
+    function activateSection(section) {
       [postSection, listingsSection].forEach(s => s.classList.remove("active"));
       section.classList.add("active");
-    };
+    }
 
     postTab.addEventListener("click", () => {
       activateSection(postSection);
@@ -150,13 +233,11 @@
       renderListings();
     });
 
-    // -- Render listings from server instead of localStorage --
+    // Render listings
     async function renderListings() {
       const listingsContainer = document.getElementById("listings");
       listingsContainer.innerHTML = "";
-
-      // GET all listings from backend
-      const response = await fetch("https://chickenlitter4u.onrender.com/api/listings");
+      const response = await fetch(RENDER_URL);
       const listings = await response.json();
 
       listings.forEach((listing, i) => {
@@ -176,25 +257,25 @@
       });
     }
 
-    async function refreshListings() {
+    // Refresh
+    function refreshListings() {
       renderListings();
     }
 
-    // -- Edit Listing (requires re-saving to server) --
+    // Edit listing
     async function editListing(index) {
-      // We'll need to fetch the existing listings again
-      const response = await fetch("https://chickenlitter4u.onrender.com/api/listings");
+      const response = await fetch(RENDER_URL);
       const listings = await response.json();
-
       const l = listings[index];
-      sellerName.value = l.sellerName;
-      phone.value = l.phone;
-      address.value = l.address;
-      city.value = l.city;
-      state.value = l.state;
-      zip.value = l.zip;
-      quantity.value = l.quantity;
-      description.value = l.description;
+
+      document.getElementById("sellerName").value = l.sellerName;
+      document.getElementById("phone").value = l.phone;
+      document.getElementById("address").value = l.address;
+      document.getElementById("city").value = l.city;
+      document.getElementById("state").value = l.state;
+      document.getElementById("zip").value = l.zip;
+      document.getElementById("quantity").value = l.quantity;
+      document.getElementById("description").value = l.description;
 
       if (l.imageUrl) {
         imagePreview.src = l.imageUrl;
@@ -205,25 +286,19 @@
         fileName.textContent = "No file chosen";
       }
 
-      // Delete the old listing from server before re-posting
-      await deleteListing(index);
-
-      // Switch tabs
+      await deleteListing(index); // remove old listing
       activateSection(postSection);
       postTab.classList.add("active");
       listingsTab.classList.remove("active");
     }
 
-    // -- Delete listing from server --
+    // Delete listing
     async function deleteListing(index) {
-      // For simplicity, we assume our backend can handle a DELETE by index
-      // Real code might use an ID-based approach
-      await fetch("https://chickenlitter4u.onrender.com/api/listings"${index}`, { method: "DELETE" });
+      await fetch(\`${RENDER_URL}/\${index}\`, { method: "DELETE" });
       renderListings();
     }
 
-    // Initially load all listings in the background
-    // but keep “Post Listing” tab visible
+    // Initial listings fetch
     renderListings();
   </script>
 </body>
