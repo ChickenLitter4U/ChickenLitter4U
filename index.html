@@ -2,13 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ChickenLitter4U</title>
   <style>
+    /* General Styling */
     body {
       margin: 0;
       padding: 0;
-      font-family: Segoe UI, sans-serif;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
       background: #f5f5f5;
       color: #333;
     }
@@ -19,10 +20,21 @@
       padding: 2rem;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
+    header h1 {
+      margin: 0;
+      font-size: 2.5rem;
+    }
+    header p {
+      margin: 0;
+      font-size: 1.2rem;
+    }
+
+    /* Tabs Styling */
     .tabs {
       display: flex;
       justify-content: center;
       border-bottom: 2px solid #8b0000;
+      background: #fff;
     }
     .tabs button {
       padding: 1rem 2rem;
@@ -31,17 +43,19 @@
       font-size: 1.2rem;
       border: 2px solid transparent;
       cursor: pointer;
-      transition: 0.3s;
+      transition: all 0.3s ease;
     }
     .tabs button.active {
       border-bottom: 4px solid #8b0000;
+      font-weight: bold;
       transform: scale(1.1);
     }
     .tabs button:hover {
-      background: #cd5c5c;
+      background: #8b0000;
       color: #fff;
-      border-color: #8b0000;
     }
+
+    /* Containers */
     .container {
       max-width: 900px;
       margin: 2rem auto;
@@ -54,28 +68,70 @@
     .container.active {
       display: block;
     }
+
+    /* Form Styling */
+    form {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: 1fr 1fr;
+    }
+    form input,
+    form textarea {
+      width: 95%;
+      padding: 0.9rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      transition: border-color 0.3s ease;
+    }
+    form input:focus,
+    form textarea:focus {
+      border-color: #8b0000;
+      outline: none;
+    }
+    form button {
+      grid-column: span 2;
+      padding: 0.9rem;
+      font-size: 1rem;
+      background: #8b0000;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    form button:hover {
+      background: #cd5c5c;
+      transform: scale(1.05);
+    }
+
+    /* Listings Styling */
     #listings {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 1rem;
-      margin-top: 1rem;
+      gap: 1.5rem;
+      margin-top: 1.5rem;
     }
     .listing-card {
-      background: #f9f9f9;
+      background: #fff;
       border: 1px solid #ddd;
-      padding: 1rem;
-      border-radius: 15px;
+      border-radius: 10px;
+      padding: 1.5rem;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      transition: 0.2s;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
     .listing-card:hover {
       transform: translateY(-5px);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
     }
-    .listing-card img {
-      width: 100%;
-      border-radius: 5px;
-      margin-bottom: 1rem;
+    .listing-card h3 {
+      margin: 0 0 0.5rem;
+      color: #8b0000;
+      font-size: 1.4rem;
+    }
+    .listing-card p {
+      margin: 0.5rem 0;
+      line-height: 1.5;
     }
   </style>
 </head>
@@ -93,13 +149,13 @@
   <div id="postSection" class="container active">
     <h2>Create a New Listing</h2>
     <form id="listingForm">
-      <input type="text" id="sellerName" placeholder="Your Name" required />
-      <input type="text" id="phone" placeholder="Phone Number" required />
-      <input type="text" id="address" placeholder="Address" required />
-      <input type="text" id="city" placeholder="City" required />
-      <input type="text" id="state" placeholder="State" required />
-      <input type="text" id="zip" placeholder="Zip Code" required />
-      <input type="number" id="quantity" placeholder="Quantity (in tons)" required />
+      <input id="sellerName" type="text" placeholder="Your Name" required />
+      <input id="phone" type="text" placeholder="Phone Number" required />
+      <input id="address" type="text" placeholder="Address" required />
+      <input id="city" type="text" placeholder="City" required />
+      <input id="state" type="text" placeholder="State" required />
+      <input id="zip" type="text" placeholder="Zip Code" required />
+      <input id="quantity" type="number" placeholder="Quantity (in tons)" required />
       <textarea id="description" placeholder="Description" rows="4"></textarea>
       <button type="submit">Post Listing</button>
     </form>
@@ -111,9 +167,8 @@
   </div>
 
   <script>
-    const BASE_URL = "http://localhost:3000/api/listings"; // Replace with your backend URL if hosted
+    const BASE_URL = "http://localhost:3000/api/listings"; // Replace with backend URL if hosted
 
-    // Tab functionality
     const tabs = {
       post: document.getElementById("postSection"),
       listings: document.getElementById("listingsSection"),
@@ -122,17 +177,18 @@
       post: document.getElementById("postTab"),
       listings: document.getElementById("listingsTab"),
     };
+
     function showTab(tab) {
       Object.values(tabs).forEach((t) => t.classList.remove("active"));
       tabs[tab].classList.add("active");
     }
+
     tabButtons.post.addEventListener("click", () => showTab("post"));
     tabButtons.listings.addEventListener("click", () => {
       showTab("listings");
       loadListings();
     });
 
-    // Post Listing
     document.getElementById("listingForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       const sellerName = document.getElementById("sellerName").value;
@@ -155,7 +211,6 @@
       loadListings();
     });
 
-    // Load Listings
     async function loadListings() {
       const response = await fetch(BASE_URL);
       const listings = await response.json();
