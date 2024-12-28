@@ -20,20 +20,23 @@ app.post("/api/signup", (req, res) => {
   const { username, password } = req.body;
 
   // Check if username already exists
-  const existingUser = users.find(u => u.username === username);
+  const existingUser = users.find((u) => u.username === username);
   if (existingUser) {
     return res.status(400).json({ error: "Username already exists" });
   }
 
-  // Add new user
+  // Add new user and log it
   users.push({ username, password });
+  console.log("Users:", users); // Debugging: See stored users in the terminal
   res.status(201).send("User signed up successfully");
 });
 
 // Login endpoint (returns a token)
 app.post("/api/login", (req, res) => {
   const { username, password } = req.body;
-  const user = users.find(u => u.username === username && u.password === password);
+  const user = users.find(
+    (u) => u.username === username && u.password === password
+  );
 
   if (!user) {
     return res.status(401).json({ error: "Invalid username or password" });
