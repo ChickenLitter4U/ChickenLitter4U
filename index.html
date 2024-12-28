@@ -16,31 +16,13 @@
 <body>
   <header>
     <h1>ChickenLitter4U</h1>
-    <p>Sign up or log in to manage listings</p>
+    <p>Manage your listings</p>
   </header>
   <div class="tabs">
-    <button id="signupTab">Sign Up</button>
-    <button id="loginTab">Login</button>
-    <button id="postTab" disabled>Post Listing</button>
+    <button id="postTab" class="active">Post Listing</button>
     <button id="listingsTab">View Listings</button>
   </div>
-  <div id="signupSection" class="container active">
-    <h2>Sign Up</h2>
-    <form id="signupForm">
-      <input id="newUsername" placeholder="Username" required />
-      <input id="newPassword" placeholder="Password" type="password" required />
-      <button type="submit">Sign Up</button>
-    </form>
-  </div>
-  <div id="loginSection" class="container">
-    <h2>Login</h2>
-    <form id="loginForm">
-      <input id="username" placeholder="Username" required />
-      <input id="password" placeholder="Password" type="password" required />
-      <button type="submit">Login</button>
-    </form>
-  </div>
-  <div id="postSection" class="container">
+  <div id="postSection" class="container active">
     <h2>Post Listing</h2>
     <form id="postForm">
       <input id="item" placeholder="Item Name" required />
@@ -53,18 +35,14 @@
     <ul id="listings"></ul>
   </div>
   <script>
-    const BASE_URL = "http://localhost:3000"; // Replace with your backend's deployed URL if hosted
+    const BASE_URL = "http://localhost:3000"; // Replace with your backend's URL if deployed
 
     // Tabs
     const tabs = {
-      signup: document.getElementById("signupSection"),
-      login: document.getElementById("loginSection"),
       post: document.getElementById("postSection"),
       listings: document.getElementById("listingsSection"),
     };
     const tabButtons = {
-      signup: document.getElementById("signupTab"),
-      login: document.getElementById("loginTab"),
       post: document.getElementById("postTab"),
       listings: document.getElementById("listingsTab"),
     };
@@ -72,74 +50,25 @@
       Object.values(tabs).forEach(t => t.classList.remove("active"));
       tabs[tab].classList.add("active");
     }
-    tabButtons.signup.addEventListener("click", () => showTab("signup"));
-    tabButtons.login.addEventListener("click", () => showTab("login"));
     tabButtons.post.addEventListener("click", () => showTab("post"));
     tabButtons.listings.addEventListener("click", () => showTab("listings"));
-
-    // Sign-Up
-    document.getElementById("signupForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const username = document.getElementById("newUsername").value;
-      const password = document.getElementById("newPassword").value;
-
-      const res = await fetch(`${BASE_URL}/api/signup`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
-      });
-
-      if (res.ok) {
-        alert("Sign-Up successful! You can now log in.");
-        showTab("login");
-      } else {
-        alert("Sign-Up failed. Username might already exist.");
-      }
-    });
-
-    // Login
-    document.getElementById("loginForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const username = document.getElementById("username").value;
-      const password = document.getElementById("password").value;
-
-      const res = await fetch(`${BASE_URL}/api/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
-      });
-
-      if (res.ok) {
-        const { token } = await res.json();
-        localStorage.setItem("authToken", token);
-        alert("Login successful");
-        tabButtons.post.disabled = false;
-        showTab("post");
-      } else {
-        alert("Invalid login");
-      }
-    });
 
     // Post Listing
     document.getElementById("postForm").addEventListener("submit", async (e) => {
       e.preventDefault();
-      const token = localStorage.getItem("authToken");
-      if (!token) return alert("You must log in first");
       const item = document.getElementById("item").value;
       const quantity = document.getElementById("quantity").value;
 
       const res = await fetch(`${BASE_URL}/api/listings`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ item, quantity }),
       });
 
       if (res.ok) {
         alert("Listing posted!");
         showTab("listings");
+        loadListings();
       } else {
         alert("Failed to post listing");
       }
@@ -150,9 +79,33 @@
       const res = await fetch(`${BASE_URL}/api/listings`);
       const listings = await res.json();
       const ul = document.getElementById("listings");
-      ul.innerHTML = listings.map(l => `<li>${l.item} - ${l.quantity}</li>`).join("");
+      ul.innerHTML = listings
+        .map(
+          (l) => `
+          <li>
+            ${l.item} - ${l.quantity} 
+            <button onclick="deleteListing(${l.id})">Delete</button>
+          </li>
+        `
+        )
+        .join("");
     }
-    tabButtons.listings.addEventListener("click", loadListings);
+
+    // Delete Listing
+    async function deleteListing(id) {
+      const res = await fetch(`${BASE_URL}/api/listings/${id}`, {
+        method: "DELETE",
+      });
+
+      if (res.ok) {
+        loadListings();
+      } else {
+        alert("Failed to delete listing");
+      }
+    }
+
+    // Initially load listings
+    loadListings();
   </script>
 </body>
 </html>
