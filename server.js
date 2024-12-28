@@ -2,12 +2,12 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 
-// Allow cross-origin requests
+// Middleware
 app.use(cors());
 app.use(express.json());
 
 // In-memory array to store listings
-let listings = []; // Each listing will include an ID and user details
+let listings = [];
 
 // Get all listings
 app.get("/api/listings", (req, res) => {
@@ -16,27 +16,42 @@ app.get("/api/listings", (req, res) => {
 
 // Add a new listing
 app.post("/api/listings", (req, res) => {
-  const { name, phone, address, city, state, zip, item, quantity, description } = req.body;
-
-  const newListing = {
-    id: Date.now(), // Unique ID based on timestamp
-    name,
+  const {
+    sellerName,
     phone,
     address,
     city,
     state,
     zip,
-    item,
     quantity,
     description,
+    location,
+    date,
+    imageUrl,
+  } = req.body;
+
+  const newListing = {
+    id: Date.now(), // Unique ID for each listing
+    sellerName,
+    phone,
+    address,
+    city,
+    state,
+    zip,
+    quantity,
+    description,
+    location,
+    date,
+    imageUrl,
   };
+
   listings.push(newListing);
   res.status(201).send("Listing added");
 });
 
 // Delete a listing by ID
 app.delete("/api/listings/:id", (req, res) => {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id, 10);
   listings = listings.filter((listing) => listing.id !== id);
   res.send("Listing deleted");
 });
