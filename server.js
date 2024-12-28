@@ -8,19 +8,29 @@ app.use(cors());
 // Allow JSON in POST requests
 app.use(express.json());
 
-// In-memory array to store listings
+// In-memory arrays to store users and listings
+const users = []; // Store users in memory
 let listings = [];
 
-// Simple user database (example users)
-const users = [
-  { username: "testUser", password: "testPass" },
-  { username: "admin", password: "admin123" },
-];
-
-// A simple token for demo purposes
+// A simple token for demo purposes (for all users)
 const VALID_TOKEN = "abc123";
 
-// Authenticate user and return a token
+// Sign-Up endpoint (adds a new user)
+app.post("/api/signup", (req, res) => {
+  const { username, password } = req.body;
+
+  // Check if username already exists
+  const existingUser = users.find(u => u.username === username);
+  if (existingUser) {
+    return res.status(400).json({ error: "Username already exists" });
+  }
+
+  // Add new user
+  users.push({ username, password });
+  res.status(201).send("User signed up successfully");
+});
+
+// Login endpoint (returns a token)
 app.post("/api/login", (req, res) => {
   const { username, password } = req.body;
   const user = users.find(u => u.username === username && u.password === password);
@@ -29,17 +39,17 @@ app.post("/api/login", (req, res) => {
     return res.status(401).json({ error: "Invalid username or password" });
   }
 
-  // Return a token (In real apps, generate a secure token dynamically)
+  // Return a token
   res.json({ token: VALID_TOKEN });
 });
 
 // Middleware to check for valid token
 function checkAuth(req, res, next) {
-  const token = req.headers.authorization?.split(" ")[1]; // Extract token from "Bearer token"
+  const token = req.headers.authorization?.split(" ")[1];
   if (token !== VALID_TOKEN) {
     return res.status(401).json({ error: "Unauthorized" });
   }
-  next(); // Token is valid, proceed
+  next();
 }
 
 // Return all listings (public access)
