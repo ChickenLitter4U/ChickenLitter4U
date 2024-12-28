@@ -16,14 +16,23 @@
 <body>
   <header>
     <h1>ChickenLitter4U</h1>
-    <p>Login to manage listings</p>
+    <p>Sign up or log in to manage listings</p>
   </header>
   <div class="tabs">
+    <button id="signupTab">Sign Up</button>
     <button id="loginTab">Login</button>
     <button id="postTab" disabled>Post Listing</button>
     <button id="listingsTab">View Listings</button>
   </div>
-  <div id="loginSection" class="container active">
+  <div id="signupSection" class="container active">
+    <h2>Sign Up</h2>
+    <form id="signupForm">
+      <input id="newUsername" placeholder="Username" required />
+      <input id="newPassword" placeholder="Password" type="password" required />
+      <button type="submit">Sign Up</button>
+    </form>
+  </div>
+  <div id="loginSection" class="container">
     <h2>Login</h2>
     <form id="loginForm">
       <input id="username" placeholder="Username" required />
@@ -48,11 +57,13 @@
 
     // Tabs
     const tabs = {
+      signup: document.getElementById("signupSection"),
       login: document.getElementById("loginSection"),
       post: document.getElementById("postSection"),
       listings: document.getElementById("listingsSection"),
     };
     const tabButtons = {
+      signup: document.getElementById("signupTab"),
       login: document.getElementById("loginTab"),
       post: document.getElementById("postTab"),
       listings: document.getElementById("listingsTab"),
@@ -61,9 +72,28 @@
       Object.values(tabs).forEach(t => t.classList.remove("active"));
       tabs[tab].classList.add("active");
     }
+    tabButtons.signup.addEventListener("click", () => showTab("signup"));
     tabButtons.login.addEventListener("click", () => showTab("login"));
     tabButtons.post.addEventListener("click", () => showTab("post"));
     tabButtons.listings.addEventListener("click", () => showTab("listings"));
+
+    // Sign-Up
+    document.getElementById("signupForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const username = document.getElementById("newUsername").value;
+      const password = document.getElementById("newPassword").value;
+      const res = await fetch(`${BASE_URL}/api/signup`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+      if (res.ok) {
+        alert("Sign-Up successful! You can now log in.");
+        showTab("login");
+      } else {
+        alert("Sign-Up failed. Username might already exist.");
+      }
+    });
 
     // Login
     document.getElementById("loginForm").addEventListener("submit", async (e) => {
