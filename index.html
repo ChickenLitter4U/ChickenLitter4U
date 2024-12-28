@@ -53,7 +53,7 @@
     <ul id="listings"></ul>
   </div>
   <script>
-    const BASE_URL = "http://localhost:3000"; // Replace with your backend's deployed URL if needed
+    const BASE_URL = "http://localhost:3000"; // Replace with your backend's deployed URL if hosted
 
     // Tabs
     const tabs = {
@@ -82,11 +82,13 @@
       e.preventDefault();
       const username = document.getElementById("newUsername").value;
       const password = document.getElementById("newPassword").value;
+
       const res = await fetch(`${BASE_URL}/api/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
       });
+
       if (res.ok) {
         alert("Sign-Up successful! You can now log in.");
         showTab("login");
@@ -100,11 +102,13 @@
       e.preventDefault();
       const username = document.getElementById("username").value;
       const password = document.getElementById("password").value;
+
       const res = await fetch(`${BASE_URL}/api/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
       });
+
       if (res.ok) {
         const { token } = await res.json();
         localStorage.setItem("authToken", token);
@@ -123,6 +127,7 @@
       if (!token) return alert("You must log in first");
       const item = document.getElementById("item").value;
       const quantity = document.getElementById("quantity").value;
+
       const res = await fetch(`${BASE_URL}/api/listings`, {
         method: "POST",
         headers: {
@@ -131,6 +136,7 @@
         },
         body: JSON.stringify({ item, quantity }),
       });
+
       if (res.ok) {
         alert("Listing posted!");
         showTab("listings");
