@@ -6,91 +6,155 @@
   <title>ChickenLitter4U</title>
   <style>
     body {
-      margin:0; padding:0; font-family: Segoe UI, sans-serif;
-      background:#f5f5f5; color:#333;
+      margin:0; 
+      padding:0; 
+      font-family: Segoe UI, sans-serif;
+      background:#f5f5f5; 
+      color:#333;
     }
     header {
-      background:#8b0000; color:#fff; text-align:center;
-      padding:2rem; box-shadow:0 4px 6px rgba(0,0,0,0.1);
+      background:#8b0000; 
+      color:#fff; 
+      text-align:center;
+      padding:2rem; 
+      box-shadow:0 4px 6px rgba(0,0,0,0.1);
     }
     .tabs {
-      display:flex; justify-content:center; border-bottom:2px solid #8b0000;
+      display:flex; 
+      justify-content:center; 
+      border-bottom:2px solid #8b0000;
     }
     .tabs button {
-      padding:1rem 2rem; background:#fff; color:#8b0000; font-size:1.2rem;
-      border:2px solid transparent; cursor:pointer; transition:0.3s;
+      padding:1rem 2rem; 
+      background:#fff; 
+      color:#8b0000; 
+      font-size:1.2rem;
+      border:2px solid transparent; 
+      cursor:pointer; 
+      transition:0.3s;
     }
     .tabs button.active {
-      border-bottom:4px solid #8b0000; transform:scale(1.1);
+      border-bottom:4px solid #8b0000; 
+      transform:scale(1.1);
     }
     .tabs button:hover {
-      background:#cd5c5c; color:#fff; border-color:#8b0000;
+      background:#cd5c5c; 
+      color:#fff; 
+      border-color:#8b0000;
     }
     .container {
-      max-width:900px; margin:2rem auto; background:#fff; padding:2rem;
-      border-radius:8px; box-shadow:0 4px 6px rgba(0,0,0,0.1); display:none;
+      max-width:900px; 
+      margin:2rem auto; 
+      background:#fff; 
+      padding:2rem;
+      border-radius:8px; 
+      box-shadow:0 4px 6px rgba(0,0,0,0.1); 
+      display:none;
     }
-    .container.active { display:block; }
-    h1, h2 { margin:0; }
-    #postSection h2 { color:#8b0000; text-align:center; }
+    .container.active { 
+      display:block; 
+    }
+    h1, h2 { 
+      margin:0; 
+    }
+    #postSection h2 { 
+      color:#8b0000; 
+      text-align:center; 
+    }
     form {
-      display:grid; gap:1rem;
-      grid-template-columns: 1fr 1fr 1fr;  /* example for a wide layout */
+      display:grid; 
+      gap:1rem;
+      grid-template-columns: 1fr 1fr 1fr;
     }
-    form > input, form > textarea {
-      grid-column: span 1;
-    }
-    form > input:nth-of-type(1),
-    form > input:nth-of-type(2),
-    form > input:nth-of-type(3),
-    form > input:nth-of-type(4),
-    form > input:nth-of-type(5),
-    form > input:nth-of-type(6),
-    form > input:nth-of-type(7),
+    /* Make inputs bigger within the grid */
+    form > input, 
     form > textarea {
       width:95%;
     }
     input, textarea, button {
-      padding:0.9rem; font-size:1rem; border:1px solid #8b0000;
-      border-radius:5px; background:#fff; transition:0.3s;
-    }
-    input:focus, textarea:focus { border-color:#cd5c5c; outline:none; }
-    button {
-      background:#8b0000; color:#fff; border:none; cursor:pointer;
+      padding:0.9rem; 
+      font-size:1rem; 
+      border:1px solid #8b0000;
+      border-radius:5px; 
+      background:#fff; 
       transition:0.3s;
     }
-    button:hover { background:#cd5c5c; transform:scale(1.05); }
-    .file-upload-container {
-      margin-top:1rem; grid-column: span 3;
+    input:focus, textarea:focus { 
+      border-color:#cd5c5c; 
+      outline:none; 
     }
-    .file-upload-container label { color:#8b0000; font-weight:bold; }
+    button {
+      background:#8b0000; 
+      color:#fff; 
+      border:none; 
+      cursor:pointer;
+      transition:0.3s;
+    }
+    button:hover { 
+      background:#cd5c5c; 
+      transform:scale(1.05); 
+    }
+    .file-upload-container {
+      margin-top:1rem;
+      grid-column: span 3;
+    }
+    .file-upload-container label { 
+      color:#8b0000; 
+      font-weight:bold; 
+    }
     #imagePreview {
-      display:none; margin-top:1rem; max-width:100%; border:1px solid #8b0000;
+      display:none; 
+      margin-top:1rem; 
+      max-width:100%; 
+      border:1px solid #8b0000;
       border-radius:5px;
     }
     #listings {
-      display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
-      gap:1rem; margin-top:1rem;
+      display:grid; 
+      grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+      gap:1rem; 
+      margin-top:1rem;
     }
     .listing-card {
-      background:#f9f9f9; border:1px solid #ddd; padding:1rem;
-      border-radius:15px; box-shadow:0 2px 4px rgba(0,0,0,0.1);
+      background:#f9f9f9; 
+      border:1px solid #ddd; 
+      padding:1rem;
+      border-radius:15px; 
+      box-shadow:0 2px 4px rgba(0,0,0,0.1);
       transition:0.2s;
     }
-    .listing-card:hover { transform:translateY(-5px); box-shadow:0 4px 8px rgba(0,0,0,0.2); }
+    .listing-card:hover {
+      transform:translateY(-5px); 
+      box-shadow:0 4px 8px rgba(0,0,0,0.2);
+    }
     .listing-card img {
-      width:100%; border-radius:5px; margin-bottom:1rem;
+      width:100%; 
+      border-radius:5px; 
+      margin-bottom:1rem;
     }
     footer {
-      text-align:center; padding:1rem; background:#8b0000; color:#fff;
-      font-size:0.9rem; margin-top:2rem;
+      text-align:center; 
+      padding:1rem; 
+      background:#8b0000; 
+      color:#fff;
+      font-size:0.9rem; 
+      margin-top:2rem;
     }
     .refresh-button {
-      margin-top:1rem; background:#8b0000; color:#fff; padding:0.5rem;
-      border:none; border-radius:5px; cursor:pointer; font-size:1rem;
+      margin-top:1rem; 
+      background:#8b0000; 
+      color:#fff; 
+      padding:0.5rem;
+      border:none; 
+      border-radius:5px; 
+      cursor:pointer; 
+      font-size:1rem;
       transition:0.3s;
+      /* Removed position:absolute so it won't overlap tabs */
     }
-    .refresh-button:hover { background:#cd5c5c; }
+    .refresh-button:hover { 
+      background:#cd5c5c; 
+    }
   </style>
 </head>
 <body>
@@ -136,19 +200,20 @@
   </footer>
 
   <script>
-    // Replace with your own Render URL
+    // Insert your Render URL here
     const RENDER_URL = "https://chickenlitter4u.onrender.com/api/listings";
 
-    // File upload preview
+    // Preview code
     const imageUpload = document.getElementById("imageUpload");
     const fileName = document.getElementById("fileName");
     const imagePreview = document.getElementById("imagePreview");
-    imageUpload.addEventListener("change", e => {
+
+    imageUpload.addEventListener("change", (e) => {
       const file = e.target.files[0];
       if (file) {
         fileName.textContent = file.name;
         const reader = new FileReader();
-        reader.onload = ev => {
+        reader.onload = (ev) => {
           imagePreview.src = ev.target.result;
           imagePreview.style.display = "block";
         };
@@ -166,7 +231,7 @@
     const postTab = document.getElementById("postTab");
     const listingsTab = document.getElementById("listingsTab");
 
-    form.addEventListener("submit", async e => {
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const sellerName = document.getElementById("sellerName").value;
       const phone = document.getElementById("phone").value;
@@ -193,7 +258,7 @@
         imageUrl
       };
 
-      // POST to Render backend
+      // POST to backend
       await fetch(RENDER_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -206,7 +271,7 @@
       listingsTab.classList.add("active");
       postTab.classList.remove("active");
 
-      // Reset form
+      // Reset
       form.reset();
       imagePreview.style.display = "none";
       fileName.textContent = "No file chosen";
@@ -225,7 +290,6 @@
       postTab.classList.add("active");
       listingsTab.classList.remove("active");
     });
-
     listingsTab.addEventListener("click", () => {
       activateSection(listingsSection);
       listingsTab.classList.add("active");
@@ -233,7 +297,7 @@
       renderListings();
     });
 
-    // Render listings
+    // Render
     async function renderListings() {
       const listingsContainer = document.getElementById("listings");
       listingsContainer.innerHTML = "";
@@ -257,12 +321,11 @@
       });
     }
 
-    // Refresh
     function refreshListings() {
       renderListings();
     }
 
-    // Edit listing
+    // Edit
     async function editListing(index) {
       const response = await fetch(RENDER_URL);
       const listings = await response.json();
@@ -286,19 +349,22 @@
         fileName.textContent = "No file chosen";
       }
 
-      await deleteListing(index); // remove old listing
+      // Remove old listing
+      await deleteListing(index);
+
+      // Switch back to post tab
       activateSection(postSection);
       postTab.classList.add("active");
       listingsTab.classList.remove("active");
     }
 
-    // Delete listing
+    // Delete
     async function deleteListing(index) {
-      await fetch(\`${RENDER_URL}/\${index}\`, { method: "DELETE" });
+      await fetch(`${RENDER_URL}/${index}`, { method: "DELETE" });
       renderListings();
     }
 
-    // Initial listings fetch
+    // Initially load
     renderListings();
   </script>
 </body>
