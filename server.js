@@ -7,7 +7,7 @@ app.use(cors());
 app.use(express.json());
 
 // In-memory array to store listings
-let listings = []; // Each listing will include an ID
+let listings = []; // Each listing will include an ID and user details
 
 // Get all listings
 app.get("/api/listings", (req, res) => {
@@ -16,13 +16,19 @@ app.get("/api/listings", (req, res) => {
 
 // Add a new listing
 app.post("/api/listings", (req, res) => {
-  const { item, quantity } = req.body;
+  const { name, phone, address, city, state, zip, item, quantity, description } = req.body;
 
-  // Add a new listing with a unique ID
   const newListing = {
     id: Date.now(), // Unique ID based on timestamp
+    name,
+    phone,
+    address,
+    city,
+    state,
+    zip,
     item,
     quantity,
+    description,
   };
   listings.push(newListing);
   res.status(201).send("Listing added");
