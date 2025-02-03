@@ -1,205 +1,352 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ChickenLitter Marketplace</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ChickenLitter4U</title>
   <style>
-    /* ===== Core Improvements ===== */
-    /* 1. CSS Variables for Easy Customization */
+    /* Added CSS variables for maintainability */
     :root {
-      --primary: #8b0000;       /* Dark red */
-      --secondary: #a52a2a;     /* Slightly lighter red */
-      --background: #f8f9fa;
-      --text: #2c3e50;
-      --success: #28a745;
-      --danger: #dc3545;
+      --primary-color: #8b0000;
+      --secondary-color: #cd5c5c;
+      --background-color: #f5f5f5;
+      --text-color: #333;
     }
 
-    /* 2. Modern Box Sizing Reset */
-    *, *::before, *::after {
-      box-sizing: border-box;
-    }
-
-    /* 3. Enhanced Mobile Responsiveness */
     body {
-      font-family: 'Segoe UI', system-ui;
-      line-height: 1.6;
-      background: var(--background);
-      color: var(--text);
+      margin: 0;
+      padding: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--background-color);
+      color: var(--text-color);
     }
 
-    /* ===== Component Styling ===== */
-    .header {
-      background: var(--primary);
-      color: white;
-      padding: 2rem 1rem;
+    header {
+      background: var(--primary-color);
+      color: #fff;
       text-align: center;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      padding: 2rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
 
-    .listing-card {
-      background: white;
-      border-radius: 8px;
-      padding: 1.5rem;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      transition: transform 0.2s ease;
+    .tabs {
+      display: flex;
+      justify-content: center;
+      border-bottom: 2px solid var(--primary-color);
+      background: #fff;
     }
 
-    /* ===== New Features ===== */
-    /* Price Tag Styling */
-    .price-tag {
-      background: var(--success);
-      color: white;
-      padding: 0.25rem 0.75rem;
-      border-radius: 20px;
+    .tabs button {
+      padding: 1rem 2rem;
+      background: #fff;
+      color: var(--primary-color);
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 1.1rem;
+    }
+
+    .tabs button.active {
+      border-bottom: 4px solid var(--primary-color);
       font-weight: bold;
     }
 
-    /* Loading State */
-    .loading {
-      display: inline-block;
-      width: 1.5rem;
-      height: 1.5rem;
-      border: 3px solid rgba(0,0,0,0.1);
-      border-radius: 50%;
-      border-top-color: var(--primary);
-      animation: spin 1s ease-in-out infinite;
+    .tabs button:hover {
+      background-color: rgba(139, 0, 0, 0.1);
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 2rem auto;
+      background: #fff;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      display: none;
+    }
+
+    .container.active {
+      display: block;
+    }
+
+    .notification {
+      padding: 1rem;
+      margin: 1rem 0;
+      border-radius: 5px;
+      display: none;
+    }
+
+    .notification.success {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .notification.error {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    form {
+      display: grid;
+      gap: 1.5rem;
+      grid-template-columns: 1fr;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    form label {
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+
+    form input,
+    form textarea {
+      padding: 0.8rem;
+      border: 2px solid #ddd;
+      border-radius: 5px;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+    }
+
+    form input:focus,
+    form textarea:focus {
+      border-color: var(--primary-color);
+      outline: none;
+    }
+
+    form button {
+      padding: 1rem;
+      font-size: 1.1rem;
+      background: var(--primary-color);
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    form button:hover {
+      background: var(--secondary-color);
+    }
+
+    #listings {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .listing-card {
+      background: #fff;
+      border: 1px solid #eee;
+      border-radius: 10px;
+      padding: 1.5rem;
+      transition: transform 0.3s ease;
+    }
+
+    .listing-card:hover {
+      transform: translateY(-3px);
+    }
+
+    .listing-card h3 {
+      margin: 0 0 0.5rem;
+      color: var(--primary-color);
+    }
+
+    .listing-meta {
+      font-size: 0.9rem;
+      color: #666;
+      margin-bottom: 0.5rem;
+    }
+
+    @media (min-width: 768px) {
+      form {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .form-group.full-width {
+        grid-column: span 2;
+      }
     }
   </style>
 </head>
 <body>
-  <header class="header">
-    <h1>🐔 ChickenLitter Connect</h1>
-    <p>Connecting farmers with quality poultry byproducts</p>
+  <header>
+    <h1>ChickenLitter4U</h1>
+    <p>Your one-stop solution for buying and selling chicken litter!</p>
   </header>
 
-  <main class="container">
-    <!-- Enhanced Listing Form -->
-    <form id="listingForm" class="listing-form">
+  <div class="tabs">
+    <button id="postTab" class="active">Post Listing</button>
+    <button id="listingsTab">View Listings</button>
+  </div>
+
+  <div class="notification" id="notification"></div>
+
+  <div id="postSection" class="container active">
+    <h2>Create New Listing</h2>
+    <form id="listingForm">
+      <div class="form-group">
+        <label for="sellerName">Your Name</label>
+        <input id="sellerName" type="text" required>
+      </div>
+
+      <div class="form-group">
+        <label for="phone">Phone Number</label>
+        <input id="phone" type="tel" pattern="[0-9]{10}" required>
+      </div>
+
+      <div class="form-group">
+        <label for="address">Address</label>
+        <input id="address" type="text" required>
+      </div>
+
+      <div class="form-group">
+        <label for="city">City</label>
+        <input id="city" type="text" required>
+      </div>
+
+      <div class="form-group">
+        <label for="state">State</label>
+        <input id="state" type="text" required>
+      </div>
+
+      <div class="form-group">
+        <label for="zip">Zip Code</label>
+        <input id="zip" type="text" pattern="[0-9]{5}" required>
+      </div>
+
       <div class="form-group">
         <label for="quantity">Quantity (tons)</label>
-        <input type="number" id="quantity" step="0.1" min="0.5" required>
-        <small>Minimum 0.5 tons</small>
+        <input id="quantity" type="number" min="1" step="0.1" required>
       </div>
-      
-      <!-- Price Input Added -->
-      <div class="form-group">
-        <label for="price">Price per ton ($)</label>
-        <input type="number" id="price" step="0.01" required>
+
+      <div class="form-group full-width">
+        <label for="description">Description</label>
+        <textarea id="description" rows="4"></textarea>
       </div>
+
+      <button type="submit">Post Listing</button>
     </form>
+  </div>
 
-    <!-- Enhanced Listings Section -->
-    <section id="listings">
-      <!-- Listing Template (Hidden) -->
-      <template id="listingTemplate">
-        <article class="listing-card">
-          <header>
-            <h3 data-ref="seller"></h3>
-            <div class="listing-meta">
-              <span class="price-tag" data-ref="price"></span>
-              <span data-ref="quantity"></span>
-            </div>
-          </header>
-          <!-- Delete Button Added -->
-          <button class="delete-btn" aria-label="Delete listing">🗑️</button>
-        </article>
-      </template>
-    </section>
-  </main>
+  <div id="listingsSection" class="container">
+    <h2>Available Listings</h2>
+    <div id="listings">
+      <p class="no-listings">No listings available. Be the first to post one!</p>
+    </div>
+  </div>
 
-<script>
-/* ===== Major Functional Improvements ===== */
-class ChickenLitterApp {
-  constructor() {
-    this.STORAGE_KEY = 'chickenLitterListings';
-    this.listings = JSON.parse(localStorage.getItem(this.STORAGE_KEY)) || [];
-    
-    // Initialize app
-    this.initForm();
-    this.renderListings();
-    this.setupSearch(); // New search feature
-  }
+  <script>
+    // LocalStorage integration
+    const STORAGE_KEY = 'chickenLitterListings';
+    let listings = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 
-  initForm() {
-    document.getElementById('listingForm').addEventListener('submit', (e) => {
+    // DOM Elements
+    const tabs = document.querySelectorAll('.container');
+    const tabButtons = document.querySelectorAll('.tabs button');
+    const notification = document.getElementById('notification');
+    const form = document.getElementById('listingForm');
+    const listingsContainer = document.getElementById('listings');
+
+    // Tab functionality
+    tabButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        // Remove active class from all tabs and buttons
+        tabs.forEach(tab => tab.classList.remove('active'));
+        tabButtons.forEach(btn => btn.classList.remove('active'));
+        
+        // Add active class to clicked tab and button
+        const target = button.id === 'postTab' ? 'postSection' : 'listingsSection';
+        document.getElementById(target).classList.add('active');
+        button.classList.add('active');
+        
+        if (target === 'listingsSection') loadListings();
+      });
+    });
+
+    // Form submission
+    form.addEventListener('submit', (e) => {
       e.preventDefault();
-      const formData = new FormData(e.target);
       
-      // Enhanced data validation
-      if(this.validateListing(formData)) {
-        this.saveListing(Object.fromEntries(formData));
-        this.renderListings();
-        e.target.reset();
+      const listing = {
+        id: Date.now(),
+        sellerName: form.sellerName.value.trim(),
+        phone: form.phone.value.trim(),
+        address: form.address.value.trim(),
+        city: form.city.value.trim(),
+        state: form.state.value.trim(),
+        zip: form.zip.value.trim(),
+        quantity: parseFloat(form.quantity.value),
+        description: form.description.value.trim(),
+        date: new Date().toLocaleDateString()
+      };
+
+      if (validateListing(listing)) {
+        listings.push(listing);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(listings));
+        showNotification('Listing posted successfully!', 'success');
+        form.reset();
+        tabButtons[1].click(); // Switch to listings tab
       }
     });
-  }
 
-  validateListing(data) {
-    // Comprehensive validation
-    if(data.get('quantity') < 0.5) {
-      this.showError('Minimum quantity is 0.5 tons');
-      return false;
+    // Load listings
+    function loadListings() {
+      listingsContainer.innerHTML = listings.length > 0 
+        ? listings.map(listing => `
+            <div class="listing-card">
+              <h3>${listing.sellerName}</h3>
+              <div class="listing-meta">
+                <span>${listing.date} • ${listing.quantity} tons</span>
+              </div>
+              <p>${listing.description || 'No description provided'}</p>
+              <div class="listing-meta">
+                <p>📞 ${listing.phone}</p>
+                <p>📍 ${listing.address}, ${listing.city}, ${listing.state} ${listing.zip}</p>
+              </div>
+            </div>
+          `).join('')
+        : '<p class="no-listings">No listings available. Be the first to post one!</p>';
     }
-    return true;
-  }
 
-  saveListing(listing) {
-    // Add unique ID and timestamp
-    listing.id = Date.now().toString();
-    listing.date = new Date().toISOString();
-    this.listings.push(listing);
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.listings));
-  }
+    // Form validation
+    function validateListing(listing) {
+      if (!/^\d{10}$/.test(listing.phone)) {
+        showNotification('Please enter a valid 10-digit phone number', 'error');
+        return false;
+      }
 
-  renderListings() {
-    const template = document.getElementById('listingTemplate');
-    const container = document.getElementById('listings');
-    
-    container.innerHTML = '';
-    
-    this.listings.forEach(listing => {
-      const clone = template.content.cloneNode(true);
-      clone.querySelector('[data-ref="seller"]').textContent = listing.sellerName;
-      clone.querySelector('[data-ref="price"]').textContent = `$${listing.price}/ton`;
-      clone.querySelector('[data-ref="quantity"]').textContent = `${listing.quantity} tons`;
+      if (!/^\d{5}$/.test(listing.zip)) {
+        showNotification('Please enter a valid 5-digit ZIP code', 'error');
+        return false;
+      }
+
+      if (listing.quantity <= 0) {
+        showNotification('Please enter a valid quantity', 'error');
+        return false;
+      }
+
+      return true;
+    }
+
+    // Notification system
+    function showNotification(message, type = 'success') {
+      notification.textContent = message;
+      notification.className = `notification ${type}`;
+      notification.style.display = 'block';
       
-      // Add delete functionality
-      clone.querySelector('.delete-btn').addEventListener('click', () => {
-        this.deleteListing(listing.id);
-      });
-      
-      container.appendChild(clone);
-    });
-  }
+      setTimeout(() => {
+        notification.style.display = 'none';
+      }, 3000);
+    }
 
-  // New feature: Delete listings
-  deleteListing(id) {
-    this.listings = this.listings.filter(listing => listing.id !== id);
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.listings));
-    this.renderListings();
-  }
-
-  // New feature: Search functionality
-  setupSearch() {
-    const searchInput = document.createElement('input');
-    searchInput.placeholder = 'Search listings...';
-    searchInput.classList.add('search-input');
-    document.querySelector('main').prepend(searchInput);
-    
-    searchInput.addEventListener('input', (e) => {
-      const term = e.target.value.toLowerCase();
-      this.renderListings(this.listings.filter(listing => 
-        listing.sellerName.toLowerCase().includes(term) ||
-        listing.description.toLowerCase().includes(term)
-      ));
-    });
-  }
-}
-
-// Initialize application
-new ChickenLitterApp();
-</script>
+    // Initial load
+    loadListings();
+  </script>
 </body>
 </html>
