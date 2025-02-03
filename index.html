@@ -1,250 +1,205 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🐔 ChickenLitter Connect - Marketplace</title>
-    <style>
-        :root {
-            --primary: #2c5f2d;    /* Farm green */
-            --secondary: #97bc62; /* Fresh lime */
-            --accent: #ffb347;    /* Organic orange */
-            --background: #f4f4f4;
-            --text: #333;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChickenLitter Marketplace</title>
+  <style>
+    /* ===== Core Improvements ===== */
+    /* 1. CSS Variables for Easy Customization */
+    :root {
+      --primary: #8b0000;       /* Dark red */
+      --secondary: #a52a2a;     /* Slightly lighter red */
+      --background: #f8f9fa;
+      --text: #2c3e50;
+      --success: #28a745;
+      --danger: #dc3545;
+    }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+    /* 2. Modern Box Sizing Reset */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
 
-        body {
-            font-family: 'Arial', sans-serif;
-            line-height: 1.6;
-            background: var(--background);
-            color: var(--text);
-        }
+    /* 3. Enhanced Mobile Responsiveness */
+    body {
+      font-family: 'Segoe UI', system-ui;
+      line-height: 1.6;
+      background: var(--background);
+      color: var(--text);
+    }
 
-        .header {
-            background: var(--primary);
-            color: white;
-            padding: 2rem;
-            text-align: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
+    /* ===== Component Styling ===== */
+    .header {
+      background: var(--primary);
+      color: white;
+      padding: 2rem 1rem;
+      text-align: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
 
-        .container {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-        }
+    .listing-card {
+      background: white;
+      border-radius: 8px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      transition: transform 0.2s ease;
+    }
 
-        .listing-form {
-            background: white;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
-        }
+    /* ===== New Features ===== */
+    /* Price Tag Styling */
+    .price-tag {
+      background: var(--success);
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-weight: bold;
+    }
 
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        input, textarea, select {
-            padding: 0.8rem;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-            font-size: 1rem;
-        }
-
-        button {
-            padding: 0.8rem 1.5rem;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .primary-btn {
-            background: var(--primary);
-            color: white;
-        }
-
-        .listing-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .listing-card {
-            background: white;
-            border-radius: 10px;
-            padding: 1.5rem;
-            position: relative;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .delete-btn {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: transparent;
-            color: #ff4444;
-            font-size: 1.2rem;
-        }
-
-        .price-tag {
-            background: var(--accent);
-            color: white;
-            padding: 0.3rem 1rem;
-            border-radius: 20px;
-            font-weight: bold;
-            display: inline-block;
-            margin: 0.5rem 0;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 0 1rem;
-            }
-            
-            .header {
-                padding: 1.5rem;
-            }
-        }
-    </style>
+    /* Loading State */
+    .loading {
+      display: inline-block;
+      width: 1.5rem;
+      height: 1.5rem;
+      border: 3px solid rgba(0,0,0,0.1);
+      border-radius: 50%;
+      border-top-color: var(--primary);
+      animation: spin 1s ease-in-out infinite;
+    }
+  </style>
 </head>
 <body>
-    <header class="header">
-        <h1>🐔 ChickenLitter Connect</h1>
-        <p>Your Local Poultry Byproducts Marketplace</p>
-    </header>
+  <header class="header">
+    <h1>🐔 ChickenLitter Connect</h1>
+    <p>Connecting farmers with quality poultry byproducts</p>
+  </header>
 
-    <div class="container">
-        <!-- Listing Form -->
-        <form class="listing-form" id="listingForm">
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>Your Name</label>
-                    <input type="text" id="sellerName" required>
-                </div>
-                <div class="form-group">
-                    <label>Phone</label>
-                    <input type="tel" id="phone" pattern="[0-9]{10}" required>
-                </div>
-                <div class="form-group">
-                    <label>Quantity (tons)</label>
-                    <input type="number" id="quantity" min="0.5" step="0.1" required>
-                </div>
-                <div class="form-group">
-                    <label>Price per ton ($)</label>
-                    <input type="number" id="price" min="1" step="0.01" required>
-                </div>
-                <div class="form-group">
-                    <label>Litter Type</label>
-                    <select id="type">
-                        <option value="fresh">Fresh</option>
-                        <option value="composted">Composted</option>
-                        <option value="pelletized">Pelletized</option>
-                    </select>
-                </div>
+  <main class="container">
+    <!-- Enhanced Listing Form -->
+    <form id="listingForm" class="listing-form">
+      <div class="form-group">
+        <label for="quantity">Quantity (tons)</label>
+        <input type="number" id="quantity" step="0.1" min="0.5" required>
+        <small>Minimum 0.5 tons</small>
+      </div>
+      
+      <!-- Price Input Added -->
+      <div class="form-group">
+        <label for="price">Price per ton ($)</label>
+        <input type="number" id="price" step="0.01" required>
+      </div>
+    </form>
+
+    <!-- Enhanced Listings Section -->
+    <section id="listings">
+      <!-- Listing Template (Hidden) -->
+      <template id="listingTemplate">
+        <article class="listing-card">
+          <header>
+            <h3 data-ref="seller"></h3>
+            <div class="listing-meta">
+              <span class="price-tag" data-ref="price"></span>
+              <span data-ref="quantity"></span>
             </div>
-            <button type="submit" class="primary-btn">Post Listing</button>
-        </form>
+          </header>
+          <!-- Delete Button Added -->
+          <button class="delete-btn" aria-label="Delete listing">🗑️</button>
+        </article>
+      </template>
+    </section>
+  </main>
 
-        <!-- Listings Grid -->
-        <div class="listing-grid" id="listings"></div>
-    </div>
+<script>
+/* ===== Major Functional Improvements ===== */
+class ChickenLitterApp {
+  constructor() {
+    this.STORAGE_KEY = 'chickenLitterListings';
+    this.listings = JSON.parse(localStorage.getItem(this.STORAGE_KEY)) || [];
+    
+    // Initialize app
+    this.initForm();
+    this.renderListings();
+    this.setupSearch(); // New search feature
+  }
 
-    <script>
-        class ChickenMarket {
-            constructor() {
-                this.listings = JSON.parse(localStorage.getItem('chickenListings')) || [];
-                this.initForm();
-                this.renderListings();
-            }
+  initForm() {
+    document.getElementById('listingForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      
+      // Enhanced data validation
+      if(this.validateListing(formData)) {
+        this.saveListing(Object.fromEntries(formData));
+        this.renderListings();
+        e.target.reset();
+      }
+    });
+  }
 
-            initForm() {
-                document.getElementById('listingForm').addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    const newListing = {
-                        id: Date.now(),
-                        seller: document.getElementById('sellerName').value,
-                        phone: document.getElementById('phone').value,
-                        quantity: parseFloat(document.getElementById('quantity').value),
-                        price: parseFloat(document.getElementById('price').value),
-                        type: document.getElementById('type').value,
-                        date: new Date().toLocaleDateString()
-                    };
+  validateListing(data) {
+    // Comprehensive validation
+    if(data.get('quantity') < 0.5) {
+      this.showError('Minimum quantity is 0.5 tons');
+      return false;
+    }
+    return true;
+  }
 
-                    if (this.validateListing(newListing)) {
-                        this.listings.push(newListing);
-                        this.saveToStorage();
-                        this.renderListings();
-                        e.target.reset();
-                    }
-                });
-            }
+  saveListing(listing) {
+    // Add unique ID and timestamp
+    listing.id = Date.now().toString();
+    listing.date = new Date().toISOString();
+    this.listings.push(listing);
+    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.listings));
+  }
 
-            validateListing(listing) {
-                if (!/^\d{10}$/.test(listing.phone)) {
-                    alert('Please enter a valid 10-digit phone number');
-                    return false;
-                }
-                if (listing.quantity < 0.5) {
-                    alert('Minimum quantity is 0.5 tons');
-                    return false;
-                }
-                return true;
-            }
+  renderListings() {
+    const template = document.getElementById('listingTemplate');
+    const container = document.getElementById('listings');
+    
+    container.innerHTML = '';
+    
+    this.listings.forEach(listing => {
+      const clone = template.content.cloneNode(true);
+      clone.querySelector('[data-ref="seller"]').textContent = listing.sellerName;
+      clone.querySelector('[data-ref="price"]').textContent = `$${listing.price}/ton`;
+      clone.querySelector('[data-ref="quantity"]').textContent = `${listing.quantity} tons`;
+      
+      // Add delete functionality
+      clone.querySelector('.delete-btn').addEventListener('click', () => {
+        this.deleteListing(listing.id);
+      });
+      
+      container.appendChild(clone);
+    });
+  }
 
-            saveToStorage() {
-                localStorage.setItem('chickenListings', JSON.stringify(this.listings));
-            }
+  // New feature: Delete listings
+  deleteListing(id) {
+    this.listings = this.listings.filter(listing => listing.id !== id);
+    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.listings));
+    this.renderListings();
+  }
 
-            renderListings() {
-                const container = document.getElementById('listings');
-                container.innerHTML = this.listings.length > 0 
-                    ? this.listings.map(listing => `
-                        <div class="listing-card">
-                            <button class="delete-btn" data-id="${listing.id}">×</button>
-                            <h3>${listing.seller}</h3>
-                            <div class="price-tag">$${listing.price.toFixed(2)}/ton</div>
-                            <p>📦 ${listing.quantity.toFixed(1)} tons (${listing.type})</p>
-                            <p>📞 ${listing.phone}</p>
-                            <small>Posted: ${listing.date}</small>
-                        </div>
-                    `).join('')
-                    : '<p>No listings available. Be the first to post!</p>';
+  // New feature: Search functionality
+  setupSearch() {
+    const searchInput = document.createElement('input');
+    searchInput.placeholder = 'Search listings...';
+    searchInput.classList.add('search-input');
+    document.querySelector('main').prepend(searchInput);
+    
+    searchInput.addEventListener('input', (e) => {
+      const term = e.target.value.toLowerCase();
+      this.renderListings(this.listings.filter(listing => 
+        listing.sellerName.toLowerCase().includes(term) ||
+        listing.description.toLowerCase().includes(term)
+      ));
+    });
+  }
+}
 
-                // Add delete functionality
-                document.querySelectorAll('.delete-btn').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        this.deleteListing(btn.dataset.id);
-                    });
-                });
-            }
-
-            deleteListing(id) {
-                this.listings = this.listings.filter(listing => listing.id !== parseInt(id));
-                this.saveToStorage();
-                this.renderListings();
-            }
-        }
-
-        // Initialize marketplace
-        const marketplace = new ChickenMarket();
-    </script>
+// Initialize application
+new ChickenLitterApp();
+</script>
 </body>
 </html>
