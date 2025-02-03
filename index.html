@@ -1,352 +1,250 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ChickenLitter4U</title>
-  <style>
-    /* Added CSS variables for maintainability */
-    :root {
-      --primary-color: #8b0000;
-      --secondary-color: #cd5c5c;
-      --background-color: #f5f5f5;
-      --text-color: #333;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐔 ChickenLitter Connect - Marketplace</title>
+    <style>
+        :root {
+            --primary: #2c5f2d;    /* Farm green */
+            --secondary: #97bc62; /* Fresh lime */
+            --accent: #ffb347;    /* Organic orange */
+            --background: #f4f4f4;
+            --text: #333;
+        }
 
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      background: var(--background-color);
-      color: var(--text-color);
-    }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-    header {
-      background: var(--primary-color);
-      color: #fff;
-      text-align: center;
-      padding: 2rem;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            background: var(--background);
+            color: var(--text);
+        }
 
-    .tabs {
-      display: flex;
-      justify-content: center;
-      border-bottom: 2px solid var(--primary-color);
-      background: #fff;
-    }
+        .header {
+            background: var(--primary);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
 
-    .tabs button {
-      padding: 1rem 2rem;
-      background: #fff;
-      color: var(--primary-color);
-      border: none;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      font-size: 1.1rem;
-    }
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
 
-    .tabs button.active {
-      border-bottom: 4px solid var(--primary-color);
-      font-weight: bold;
-    }
+        .listing-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
 
-    .tabs button:hover {
-      background-color: rgba(139, 0, 0, 0.1);
-    }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
 
-    .container {
-      max-width: 900px;
-      margin: 2rem auto;
-      background: #fff;
-      padding: 2rem;
-      border-radius: 8px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      display: none;
-    }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
 
-    .container.active {
-      display: block;
-    }
+        input, textarea, select {
+            padding: 0.8rem;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
 
-    .notification {
-      padding: 1rem;
-      margin: 1rem 0;
-      border-radius: 5px;
-      display: none;
-    }
+        button {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
 
-    .notification.success {
-      background: #d4edda;
-      color: #155724;
-    }
+        .primary-btn {
+            background: var(--primary);
+            color: white;
+        }
 
-    .notification.error {
-      background: #f8d7da;
-      color: #721c24;
-    }
+        .listing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
 
-    form {
-      display: grid;
-      gap: 1.5rem;
-      grid-template-columns: 1fr;
-    }
+        .listing-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            position: relative;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
 
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
+        .delete-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: transparent;
+            color: #ff4444;
+            font-size: 1.2rem;
+        }
 
-    form label {
-      font-weight: 600;
-      color: var(--primary-color);
-    }
+        .price-tag {
+            background: var(--accent);
+            color: white;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-weight: bold;
+            display: inline-block;
+            margin: 0.5rem 0;
+        }
 
-    form input,
-    form textarea {
-      padding: 0.8rem;
-      border: 2px solid #ddd;
-      border-radius: 5px;
-      font-size: 1rem;
-      transition: border-color 0.3s ease;
-    }
-
-    form input:focus,
-    form textarea:focus {
-      border-color: var(--primary-color);
-      outline: none;
-    }
-
-    form button {
-      padding: 1rem;
-      font-size: 1.1rem;
-      background: var(--primary-color);
-      color: #fff;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    form button:hover {
-      background: var(--secondary-color);
-    }
-
-    #listings {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 1.5rem;
-      margin-top: 1.5rem;
-    }
-
-    .listing-card {
-      background: #fff;
-      border: 1px solid #eee;
-      border-radius: 10px;
-      padding: 1.5rem;
-      transition: transform 0.3s ease;
-    }
-
-    .listing-card:hover {
-      transform: translateY(-3px);
-    }
-
-    .listing-card h3 {
-      margin: 0 0 0.5rem;
-      color: var(--primary-color);
-    }
-
-    .listing-meta {
-      font-size: 0.9rem;
-      color: #666;
-      margin-bottom: 0.5rem;
-    }
-
-    @media (min-width: 768px) {
-      form {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      
-      .form-group.full-width {
-        grid-column: span 2;
-      }
-    }
-  </style>
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .header {
+                padding: 1.5rem;
+            }
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <h1>ChickenLitter4U</h1>
-    <p>Your one-stop solution for buying and selling chicken litter!</p>
-  </header>
+    <header class="header">
+        <h1>🐔 ChickenLitter Connect</h1>
+        <p>Your Local Poultry Byproducts Marketplace</p>
+    </header>
 
-  <div class="tabs">
-    <button id="postTab" class="active">Post Listing</button>
-    <button id="listingsTab">View Listings</button>
-  </div>
-
-  <div class="notification" id="notification"></div>
-
-  <div id="postSection" class="container active">
-    <h2>Create New Listing</h2>
-    <form id="listingForm">
-      <div class="form-group">
-        <label for="sellerName">Your Name</label>
-        <input id="sellerName" type="text" required>
-      </div>
-
-      <div class="form-group">
-        <label for="phone">Phone Number</label>
-        <input id="phone" type="tel" pattern="[0-9]{10}" required>
-      </div>
-
-      <div class="form-group">
-        <label for="address">Address</label>
-        <input id="address" type="text" required>
-      </div>
-
-      <div class="form-group">
-        <label for="city">City</label>
-        <input id="city" type="text" required>
-      </div>
-
-      <div class="form-group">
-        <label for="state">State</label>
-        <input id="state" type="text" required>
-      </div>
-
-      <div class="form-group">
-        <label for="zip">Zip Code</label>
-        <input id="zip" type="text" pattern="[0-9]{5}" required>
-      </div>
-
-      <div class="form-group">
-        <label for="quantity">Quantity (tons)</label>
-        <input id="quantity" type="number" min="1" step="0.1" required>
-      </div>
-
-      <div class="form-group full-width">
-        <label for="description">Description</label>
-        <textarea id="description" rows="4"></textarea>
-      </div>
-
-      <button type="submit">Post Listing</button>
-    </form>
-  </div>
-
-  <div id="listingsSection" class="container">
-    <h2>Available Listings</h2>
-    <div id="listings">
-      <p class="no-listings">No listings available. Be the first to post one!</p>
-    </div>
-  </div>
-
-  <script>
-    // LocalStorage integration
-    const STORAGE_KEY = 'chickenLitterListings';
-    let listings = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-
-    // DOM Elements
-    const tabs = document.querySelectorAll('.container');
-    const tabButtons = document.querySelectorAll('.tabs button');
-    const notification = document.getElementById('notification');
-    const form = document.getElementById('listingForm');
-    const listingsContainer = document.getElementById('listings');
-
-    // Tab functionality
-    tabButtons.forEach(button => {
-      button.addEventListener('click', () => {
-        // Remove active class from all tabs and buttons
-        tabs.forEach(tab => tab.classList.remove('active'));
-        tabButtons.forEach(btn => btn.classList.remove('active'));
-        
-        // Add active class to clicked tab and button
-        const target = button.id === 'postTab' ? 'postSection' : 'listingsSection';
-        document.getElementById(target).classList.add('active');
-        button.classList.add('active');
-        
-        if (target === 'listingsSection') loadListings();
-      });
-    });
-
-    // Form submission
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      
-      const listing = {
-        id: Date.now(),
-        sellerName: form.sellerName.value.trim(),
-        phone: form.phone.value.trim(),
-        address: form.address.value.trim(),
-        city: form.city.value.trim(),
-        state: form.state.value.trim(),
-        zip: form.zip.value.trim(),
-        quantity: parseFloat(form.quantity.value),
-        description: form.description.value.trim(),
-        date: new Date().toLocaleDateString()
-      };
-
-      if (validateListing(listing)) {
-        listings.push(listing);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(listings));
-        showNotification('Listing posted successfully!', 'success');
-        form.reset();
-        tabButtons[1].click(); // Switch to listings tab
-      }
-    });
-
-    // Load listings
-    function loadListings() {
-      listingsContainer.innerHTML = listings.length > 0 
-        ? listings.map(listing => `
-            <div class="listing-card">
-              <h3>${listing.sellerName}</h3>
-              <div class="listing-meta">
-                <span>${listing.date} • ${listing.quantity} tons</span>
-              </div>
-              <p>${listing.description || 'No description provided'}</p>
-              <div class="listing-meta">
-                <p>📞 ${listing.phone}</p>
-                <p>📍 ${listing.address}, ${listing.city}, ${listing.state} ${listing.zip}</p>
-              </div>
+    <div class="container">
+        <!-- Listing Form -->
+        <form class="listing-form" id="listingForm">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Your Name</label>
+                    <input type="text" id="sellerName" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input type="tel" id="phone" pattern="[0-9]{10}" required>
+                </div>
+                <div class="form-group">
+                    <label>Quantity (tons)</label>
+                    <input type="number" id="quantity" min="0.5" step="0.1" required>
+                </div>
+                <div class="form-group">
+                    <label>Price per ton ($)</label>
+                    <input type="number" id="price" min="1" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label>Litter Type</label>
+                    <select id="type">
+                        <option value="fresh">Fresh</option>
+                        <option value="composted">Composted</option>
+                        <option value="pelletized">Pelletized</option>
+                    </select>
+                </div>
             </div>
-          `).join('')
-        : '<p class="no-listings">No listings available. Be the first to post one!</p>';
-    }
+            <button type="submit" class="primary-btn">Post Listing</button>
+        </form>
 
-    // Form validation
-    function validateListing(listing) {
-      if (!/^\d{10}$/.test(listing.phone)) {
-        showNotification('Please enter a valid 10-digit phone number', 'error');
-        return false;
-      }
+        <!-- Listings Grid -->
+        <div class="listing-grid" id="listings"></div>
+    </div>
 
-      if (!/^\d{5}$/.test(listing.zip)) {
-        showNotification('Please enter a valid 5-digit ZIP code', 'error');
-        return false;
-      }
+    <script>
+        class ChickenMarket {
+            constructor() {
+                this.listings = JSON.parse(localStorage.getItem('chickenListings')) || [];
+                this.initForm();
+                this.renderListings();
+            }
 
-      if (listing.quantity <= 0) {
-        showNotification('Please enter a valid quantity', 'error');
-        return false;
-      }
+            initForm() {
+                document.getElementById('listingForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const newListing = {
+                        id: Date.now(),
+                        seller: document.getElementById('sellerName').value,
+                        phone: document.getElementById('phone').value,
+                        quantity: parseFloat(document.getElementById('quantity').value),
+                        price: parseFloat(document.getElementById('price').value),
+                        type: document.getElementById('type').value,
+                        date: new Date().toLocaleDateString()
+                    };
 
-      return true;
-    }
+                    if (this.validateListing(newListing)) {
+                        this.listings.push(newListing);
+                        this.saveToStorage();
+                        this.renderListings();
+                        e.target.reset();
+                    }
+                });
+            }
 
-    // Notification system
-    function showNotification(message, type = 'success') {
-      notification.textContent = message;
-      notification.className = `notification ${type}`;
-      notification.style.display = 'block';
-      
-      setTimeout(() => {
-        notification.style.display = 'none';
-      }, 3000);
-    }
+            validateListing(listing) {
+                if (!/^\d{10}$/.test(listing.phone)) {
+                    alert('Please enter a valid 10-digit phone number');
+                    return false;
+                }
+                if (listing.quantity < 0.5) {
+                    alert('Minimum quantity is 0.5 tons');
+                    return false;
+                }
+                return true;
+            }
 
-    // Initial load
-    loadListings();
-  </script>
+            saveToStorage() {
+                localStorage.setItem('chickenListings', JSON.stringify(this.listings));
+            }
+
+            renderListings() {
+                const container = document.getElementById('listings');
+                container.innerHTML = this.listings.length > 0 
+                    ? this.listings.map(listing => `
+                        <div class="listing-card">
+                            <button class="delete-btn" data-id="${listing.id}">×</button>
+                            <h3>${listing.seller}</h3>
+                            <div class="price-tag">$${listing.price.toFixed(2)}/ton</div>
+                            <p>📦 ${listing.quantity.toFixed(1)} tons (${listing.type})</p>
+                            <p>📞 ${listing.phone}</p>
+                            <small>Posted: ${listing.date}</small>
+                        </div>
+                    `).join('')
+                    : '<p>No listings available. Be the first to post!</p>';
+
+                // Add delete functionality
+                document.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        this.deleteListing(btn.dataset.id);
+                    });
+                });
+            }
+
+            deleteListing(id) {
+                this.listings = this.listings.filter(listing => listing.id !== parseInt(id));
+                this.saveToStorage();
+                this.renderListings();
+            }
+        }
+
+        // Initialize marketplace
+        const marketplace = new ChickenMarket();
+    </script>
 </body>
 </html>
