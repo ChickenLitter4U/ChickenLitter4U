@@ -242,9 +242,18 @@
   </div>
 
   <script>
-    // LocalStorage integration
-    const STORAGE_KEY = 'chickenLitterListings';
-    let listings = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    // Generate a unique device ID for edit/delete rights
+    const deviceId = localStorage.getItem('deviceId') || (() => {
+      const id = Math.random().toString(36).substr(2, 9);
+      localStorage.setItem('deviceId', id);
+      return id;
+    })();
+
+    // Replace this with your actual API endpoint
+    const API_URL = 'https://api.example.com/listings';
+
+    let listingsData = [];
+    let currentEditingListing = null;
 
     // DOM Elements
     const tabs = document.querySelectorAll('.container');
@@ -256,11 +265,9 @@
     // Tab functionality
     tabButtons.forEach(button => {
       button.addEventListener('click', () => {
-        // Remove active class from all tabs and buttons
         tabs.forEach(tab => tab.classList.remove('active'));
         tabButtons.forEach(btn => btn.classList.remove('active'));
         
-        // Add active class to clicked tab and button
         const target = button.id === 'postTab' ? 'postSection' : 'listingsSection';
         document.getElementById(target).classList.add('active');
         button.classList.add('active');
@@ -269,12 +276,11 @@
       });
     });
 
-    // Form submission
+    // Form submission (handles both create and update)
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       
       const listing = {
-        id: Date.now(),
         sellerName: form.sellerName.value.trim(),
         phone: form.phone.value.trim(),
         address: form.address.value.trim(),
@@ -283,35 +289,122 @@
         zip: form.zip.value.trim(),
         quantity: parseFloat(form.quantity.value),
         description: form.description.value.trim(),
-        date: new Date().toLocaleDateString()
+        date: new Date().toLocaleDateString(),
+        deviceId: deviceId
       };
 
-      if (validateListing(listing)) {
-        listings.push(listing);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(listings));
-        showNotification('Listing posted successfully!', 'success');
-        form.reset();
-        tabButtons[1].click(); // Switch to listings tab
+      if (!validateListing(listing)) return;
+
+      if (currentEditingListing) {
+        // Update listing
+        listing.id = currentEditingListing.id;
+        fetch(`${API_URL}/${listing.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(listing)
+        })
+        .then(response => response.json())
+        .then(() => {
+          showNotification('Listing updated successfully!', 'success');
+          currentEditingListing = null;
+          form.querySelector('button[type="submit"]').textContent = 'Post Listing';
+          form.reset();
+          tabButtons[1].click(); // Switch to listings tab
+        })
+        .catch(err => {
+          console.error(err);
+          showNotification('Error updating listing', 'error');
+        });
+      } else {
+        // Create new listing
+        fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(listing)
+        })
+        .then(response => response.json())
+        .then(() => {
+          showNotification('Listing posted successfully!', 'success');
+          form.reset();
+          tabButtons[1].click(); // Switch to listings tab
+        })
+        .catch(err => {
+          console.error(err);
+          showNotification('Error posting listing', 'error');
+        });
       }
     });
 
-    // Load listings
+    // Load listings from the remote API
     function loadListings() {
-      listingsContainer.innerHTML = listings.length > 0 
-        ? listings.map(listing => `
-            <div class="listing-card">
-              <h3>${listing.sellerName}</h3>
-              <div class="listing-meta">
-                <span>${listing.date} • ${listing.quantity} tons</span>
-              </div>
-              <p>${listing.description || 'No description provided'}</p>
-              <div class="listing-meta">
-                <p>📞 ${listing.phone}</p>
-                <p>📍 ${listing.address}, ${listing.city}, ${listing.state} ${listing.zip}</p>
-              </div>
-            </div>
-          `).join('')
-        : '<p class="no-listings">No listings available. Be the first to post one!</p>';
+      fetch(API_URL)
+        .then(response => response.json())
+        .then(data => {
+          listingsData = data;
+          listingsContainer.innerHTML = listingsData.length > 0 
+            ? listingsData.map(listing => `
+                <div class="listing-card">
+                  <h3>${listing.sellerName}</h3>
+                  <div class="listing-meta">
+                    <span>${listing.date} • ${listing.quantity} tons</span>
+                  </div>
+                  <p>${listing.description || 'No description provided'}</p>
+                  <div class="listing-meta">
+                    <p>📞 ${listing.phone}</p>
+                    <p>📍 ${listing.address}, ${listing.city}, ${listing.state} ${listing.zip}</p>
+                  </div>
+                  ${listing.deviceId === deviceId ? `
+                    <button class="edit-btn" data-id="${listing.id}">Edit</button>
+                    <button class="delete-btn" data-id="${listing.id}">Delete</button>
+                  ` : ''}
+                </div>
+              `).join('') 
+            : '<p class="no-listings">No listings available. Be the first to post one!</p>';
+          document.querySelectorAll('.edit-btn').forEach(button => {
+            button.addEventListener('click', handleEdit);
+          });
+          document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', handleDelete);
+          });
+        })
+        .catch(err => {
+          console.error(err);
+          listingsContainer.innerHTML = '<p class="no-listings">Error loading listings.</p>';
+        });
+    }
+
+    // Handle editing a listing
+    function handleEdit(e) {
+      const listingId = e.target.getAttribute('data-id');
+      const listing = listingsData.find(item => item.id == listingId);
+      if (!listing) return;
+      
+      form.sellerName.value = listing.sellerName;
+      form.phone.value = listing.phone;
+      form.address.value = listing.address;
+      form.city.value = listing.city;
+      form.state.value = listing.state;
+      form.zip.value = listing.zip;
+      form.quantity.value = listing.quantity;
+      form.description.value = listing.description;
+      
+      currentEditingListing = listing;
+      form.querySelector('button[type="submit"]').textContent = 'Update Listing';
+      tabButtons[0].click();
+    }
+
+    // Handle deleting a listing
+    function handleDelete(e) {
+      const listingId = e.target.getAttribute('data-id');
+      fetch(`${API_URL}/${listingId}`, { method: 'DELETE' })
+        .then(() => {
+          showNotification('Listing deleted successfully!', 'success');
+          loadListings();
+        })
+        .catch(err => {
+          console.error(err);
+          showNotification('Error deleting listing', 'error');
+        });
     }
 
     // Form validation
