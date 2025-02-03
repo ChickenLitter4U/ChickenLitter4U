@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ChickenLitter4U</title>
   <style>
-    /* Added CSS variables for maintainability */
     :root {
       --primary-color: #8b0000;
       --secondary-color: #cd5c5c;
@@ -249,8 +248,8 @@
       return id;
     })();
 
-    // Replace this with your actual API endpoint
-    const API_URL = 'https://api.example.com/listings';
+    // Using a local server API endpoint
+    const API_URL = 'http://localhost:3000/api/listings';
 
     let listingsData = [];
     let currentEditingListing = null;
@@ -360,6 +359,7 @@
                 </div>
               `).join('') 
             : '<p class="no-listings">No listings available. Be the first to post one!</p>';
+
           document.querySelectorAll('.edit-btn').forEach(button => {
             button.addEventListener('click', handleEdit);
           });
